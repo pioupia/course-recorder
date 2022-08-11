@@ -1,0 +1,51 @@
+package fr.pioupia.courserecorder.Managers;
+
+import java.util.Date;
+
+public class DurationManager {
+    public String getDuration(long start) {
+        Date date = new Date();
+        int duration = (int) ((date.getTime() - start) * 1e-3);
+
+        int days = duration / 86400;
+        duration -= days * 86400;
+
+        int hours = duration / 3600;
+        duration -= hours * 3600;
+
+        int minutes = duration / 60;
+        duration -= minutes * 60;
+
+        String str = "";
+
+        if (days > 0) {
+            str += String.valueOf(days) + "j";
+        }
+
+        if (hours > 0) {
+            str += " " + String.valueOf(hours) + "h";
+        }
+
+        if (minutes > 0) {
+            str += " " + String.valueOf(minutes) + "min";
+        }
+
+        if (duration > 0) {
+            str += " " + String.valueOf(duration) + "s";
+        }
+
+        return str;
+    }
+
+    public long getMSDuration(long deb, long end) {
+        return end - deb;
+    }
+
+    public long getPathDuration(long start, long end, long[] pauses) {
+        long removeDuration = 0;
+        for (int i = 1; i < pauses.length; i += 2) {
+            removeDuration += pauses[i];
+        }
+        return (end - start - removeDuration);
+    }
+}

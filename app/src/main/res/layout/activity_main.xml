@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background_app"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="26dp"
+        android:fontFamily="@font/mina_bold"
+        android:text="Course Recorder"
+        android:textSize="36dp"
+        android:shadowColor="#26FFFFFF"
+        android:shadowDx="0"
+        android:shadowDy="4"
+        android:shadowRadius="4"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/duration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Durée d'enregistrement : 0 minute"
+        android:layout_below="@+id/title"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white"/>
+
+    <TextView
+        android:id="@+id/distance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Distance parcourue : 0m"
+        android:layout_below="@id/duration"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white"/>
+
+    <TextView
+        android:id="@+id/speed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Vitesse : 0 km/h"
+        android:layout_below="@id/distance"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/direction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Direction : N"
+        android:layout_below="@id/speed"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white" />
+
+    <ImageView
+        android:id="@+id/startRecording"
+        android:layout_width="69dp"
+        android:layout_height="69dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="107dp"
+        android:src="@drawable/start_button" />
+
+    <RelativeLayout
+        android:id="@+id/buttonsContainer"
+        android:layout_width="178dp"
+        android:layout_height="69dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="107dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/stopRecording"
+            android:layout_width="69dp"
+            android:layout_height="69dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/stop_button" />
+
+        <ImageView
+            android:id="@+id/pauseRecording"
+            android:layout_width="69dp"
+            android:layout_height="69dp"
+            android:layout_alignParentStart="true"
+            android:src="@drawable/pause_button" />
+
+        <ImageView
+            android:id="@+id/resumeRecording"
+            android:layout_width="69dp"
+            android:layout_height="69dp"
+            android:layout_alignParentStart="true"
+            android:visibility="gone"
+            android:src="@drawable/start_button" />
+    </RelativeLayout>
+</RelativeLayout>
