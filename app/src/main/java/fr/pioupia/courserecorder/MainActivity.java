@@ -224,7 +224,6 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                 @Override
                 public void run() {
                     if (isServiceBounded) {
-                        System.out.println("set cb");
                         backgroundService.setCallback(MainActivity.this);
                         timer.cancel();
                         timer.purge();
@@ -241,9 +240,6 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
             // Stopping background service
             stopService(intent);
             unbindService(serviceConnection);
-
-            // Purge interval
-            timer.purge();
 
             // Reset states
             buttonContainer.setVisibility(View.GONE);
