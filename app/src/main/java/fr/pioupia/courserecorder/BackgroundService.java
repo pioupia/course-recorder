@@ -1,12 +1,10 @@
 package fr.pioupia.courserecorder;
 
 import android.annotation.SuppressLint;
-import android.app.ActivityManager;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
@@ -21,8 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class BackgroundService extends Service {
 
@@ -31,7 +27,9 @@ public class BackgroundService extends Service {
     private static final int LOCATION_REFRESH_TIME = 5 * 1000;
     private static final float LOCATION_REFRESH_DISTANCE = 0f;
 
-    NotificationManager mNotificationManager;
+    private boolean isCallbackDeclared = false;
+
+    ServiceCallback serviceCallback;
 
     @SuppressLint("MissingPermission")
     @Override
@@ -78,6 +76,13 @@ public class BackgroundService extends Service {
         }
     }
 
+    public void setCallback(ServiceCallback callback) {
+        if (isCallbackDeclared) return;
+
+        this.serviceCallback = callback;
+        isCallbackDeclared = true;
+    }
+
 
     public LocationListener mLocationListener = new LocationListener() {
         @SuppressLint("MissingPermission")
@@ -86,6 +91,10 @@ public class BackgroundService extends Service {
             Log.d("GPS", "localisation : " + location.toString());
             String coordonnees = String.format(Locale.FRANCE, "Latitude : %f - Longitude : %f\n", location.getLatitude(), location.getLongitude());
             Log.d("GPS", "coordonnees : " + coordonnees);
+
+            if (!isCallbackDeclared) return;
+
+            serviceCallback.locationUpdated(location);
         }
 
         @Override
@@ -103,4 +112,8 @@ public class BackgroundService extends Service {
 
         }
     };
+
+    interface ServiceCallback {
+        void locationUpdated(Location location);
+    }
 }
