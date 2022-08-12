@@ -29,6 +29,8 @@ public class BackgroundService extends Service {
 
     private boolean isCallbackDeclared = false;
 
+    public LocationManager mLocationManager;
+
     ServiceCallback serviceCallback;
 
     @SuppressLint("MissingPermission")
@@ -51,9 +53,9 @@ public class BackgroundService extends Service {
             startForeground(1001, notification.build());
         }
 
+        mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         // Starting to get foreground location
-        LocationManager mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
         mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                 LOCATION_REFRESH_TIME,
                 LOCATION_REFRESH_DISTANCE,
@@ -81,6 +83,19 @@ public class BackgroundService extends Service {
 
         this.serviceCallback = callback;
         isCallbackDeclared = true;
+    }
+
+    public void stopListener() {
+        mLocationManager.removeUpdates(mLocationListener);
+    }
+
+    @SuppressLint("MissingPermission")
+    public void startListener() {
+        mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
+                LOCATION_REFRESH_TIME,
+                LOCATION_REFRESH_DISTANCE,
+                mLocationListener,
+                Looper.getMainLooper());
     }
 
 
