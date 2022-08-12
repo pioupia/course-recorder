@@ -54,9 +54,9 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
     public int lastAlt = 0;
     public Array pauses = new Array(1);
 
-    private final int speedCount = 1;
-    private final int speed = 0;
-    private final float maxSpeed = 0;
+    private int speedCount = 1;
+    private int speed = 0;
+    private float maxSpeed = 0;
 
     public boolean havePermissions = false;
     public String rootDir = "";
@@ -235,6 +235,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
         stopRecording.setOnClickListener(view -> {
             long endTime = new Date().getTime();
 
+            backgroundService.stopListener();
+
             // mLocationManager.removeUpdates(mLocationListener);
 
             // Stopping background service
@@ -324,10 +326,27 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            // Reset values to default.
+            timer = new Timer();
+            isRecording = false;
+            startPoint = new double[2];
+            startingTime = 0;
+            lastLatitude = 0;
+            lastLongitude = 0;
+            distance = 0;
+            altMetric = 0;
+            lastAlt = 0;
+            pauses = new Array(1);
+            speedCount = 1;
+            speed = 0;
+            maxSpeed = 0;
         });
 
         pauseRecording.setOnClickListener(view -> {
-            stopService(intent);
+            if (isServiceBounded) {
+                backgroundService.stopListener();
+            }
 
             view.setVisibility(View.GONE);
 
@@ -355,19 +374,17 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
             if (permissions.locationEnabled(MainActivity.this)) return;
 
-            /* SetCallback here */
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                startForegroundService(intent);
-            } else {
-                startService(intent);
-            }
-
+            backgroundService.startListener();
 
             view.setVisibility(View.GONE);
             pauseRecording.setVisibility(View.VISIBLE);
 
-            long date = new DurationManager().getMSDuration(pauses.get(pauses.count - 1), new Date().getTime());
+            long date = new DurationManager()
+                    .getMSDuration(
+                            pauses.get(pauses.count - 1),
+                            new Date().getTime()
+                    );
+
             pauses.push(date);
         });
     }
