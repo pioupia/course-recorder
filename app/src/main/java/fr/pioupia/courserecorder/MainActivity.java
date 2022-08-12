@@ -9,10 +9,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -33,7 +33,7 @@ import fr.pioupia.courserecorder.Managers.DurationManager;
 import fr.pioupia.courserecorder.Managers.PermissionsManager;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BackgroundService.ServiceCallback {
     private int index = 0;
 
     public Timer timer = new Timer();
@@ -196,23 +196,6 @@ public class MainActivity extends AppCompatActivity {
 
             bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 
-
-            /* if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                System.out.println("Go recording...");
-                startForegroundService(intent);
-            } else {
-                System.out.println("recording...");
-                startService(intent);
-            } */
-
-            // GeofencingClient exemple
-
-            /* mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    LOCATION_REFRESH_TIME,
-                    LOCATION_REFRESH_DISTANCE,
-                    mLocationListener,
-                    Looper.getMainLooper()); */
-
             v.setVisibility(View.GONE);
             buttonContainer.setVisibility(View.VISIBLE);
 
@@ -237,14 +220,17 @@ public class MainActivity extends AppCompatActivity {
 
             isRecording = true;
 
-            timer.scheduleAtFixedRate(new TimerTask(){
+            timer.schedule(new TimerTask() {
                 @Override
-                public void run(){
+                public void run() {
                     if (isServiceBounded) {
-                        System.out.println("Running !");
+                        System.out.println("set cb");
+                        backgroundService.setCallback(MainActivity.this);
+                        timer.cancel();
+                        timer.purge();
                     }
                 }
-            },50,5000);
+            }, 300, 100);
         });
 
         stopRecording.setOnClickListener(view -> {
@@ -373,11 +359,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (permissions.locationEnabled(MainActivity.this)) return;
 
-            /* mLocationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
-                    LOCATION_REFRESH_TIME,
-                    LOCATION_REFRESH_DISTANCE,
-                    mLocationListener,
-                    Looper.getMainLooper()); */
+            /* SetCallback here */
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 startForegroundService(intent);
@@ -394,7 +376,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private ServiceConnection serviceConnection = new ServiceConnection() {
+    private final ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
             BackgroundService.LocalBinder binder = (BackgroundService.LocalBinder) iBinder;
@@ -416,5 +398,9 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return false;
+    }
+
+    public void locationUpdated(Location location) {
+        System.out.println(location);
     }
 }
