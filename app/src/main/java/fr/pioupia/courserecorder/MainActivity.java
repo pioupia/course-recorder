@@ -149,10 +149,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
             }
         }
 
-        System.out.println("LAUNCH");
-
         havePermissions = this.permissions.verifyPermissions(MainActivity.this);
-        System.out.println("Verifications passed !");
 
         if (!havePermissions) {
             ActivityCompat.requestPermissions(
@@ -183,8 +180,6 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
             if (!havePermissions) return;
 
             if (permissions.locationEnabled(MainActivity.this)) return;
-
-            System.out.println("Defined intent");
 
             if (!this.foregroundServiceRunning()) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
