@@ -232,8 +232,6 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
             backgroundService.stopListener();
 
-            // mLocationManager.removeUpdates(mLocationListener);
-
             // Stopping background service
             stopService(intent);
             unbindService(serviceConnection);
