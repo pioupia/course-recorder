@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
     /* Files stream */
     public FileOutputStream speeds = null;
-    public FileOutputStream coords = null;
+    public FileOutputStream cords = null;
     public FileOutputStream alt = null;
 
     /* Data in real time */
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                      * /records/index (stockage du dernier index en cache)
                      * /records/_temp/{index} (dossier de stockage d'un trajet en cache à l'index {index})
                      *      - /speeds (fichier contenant les vitesses)
-                     *      - /coords (fichier contenant les coordonnées)
+                     *      - /cords (fichier contenant les coordonnées ; long lat long lat)
                      *      - /alt    (fichier content les données altimétriques)
                      *      - /infos (fichier contenant les informations générales en JSON.
                      *          - Date de début (date), date de fin (date)
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                      *          - Point de départ, point d'arrivé
                      * /records/data (dossier qui stock tous les trajets parse)
                      * /records/data/index (stockage du dernier index sous la forme : "index du dossier   numéro du record")
-                     * /records/data/{index}/ (speeds/coords/alt/infos - sous forme de tableau), exemple avec speeds :
+                     * /records/data/{index}/ (speeds/cords/alt/infos - sous forme de tableau), exemple avec speeds :
                      * index ...speeds
                      * 0 12 15.00 12.53 88.12 25.32 46.58
                      * 1 12 15.00 12.53 88.12 25.32 46.58
@@ -204,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
             try {
                 String tempDir = rootDir + "/_temp/" + index + "/";
                 speeds = new FileOutputStream(tempDir + "speeds");
-                coords = new FileOutputStream(tempDir + "coords");
+                cords = new FileOutputStream(tempDir + "cords");
                 alt = new FileOutputStream(tempDir + "alt");
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -216,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                 @Override
                 public void run() {
                     if (isServiceBounded) {
-                        backgroundService.setEssentialData(MainActivity.this);
+                        backgroundService.setEssentialData(MainActivity.this, speeds, cords, alt);
                         timer.cancel();
                         timer.purge();
                     }
@@ -246,13 +246,13 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                 speeds = null;
             }
 
-            if (coords != null) {
+            if (cords != null) {
                 try {
-                    coords.close();
+                    cords.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                coords = null;
+                cords = null;
             }
 
             if (alt != null) {

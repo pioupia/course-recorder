@@ -19,6 +19,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 import fr.pioupia.courserecorder.Managers.DirectionManager;
@@ -27,6 +29,11 @@ import fr.pioupia.courserecorder.Managers.DurationManager;
 public class BackgroundService extends Service {
 
     private final IBinder binder = new LocalBinder();
+
+    /* Files stream */
+    public FileOutputStream speeds = null;
+    public FileOutputStream cords = null;
+    public FileOutputStream alt = null;
 
     /* Data */
     public double lastLatitude = 0;
@@ -92,11 +99,15 @@ public class BackgroundService extends Service {
         }
     }
 
-    public void setEssentialData(ServiceCallback callback) {
+    public void setEssentialData(ServiceCallback callback, FileOutputStream speeds, FileOutputStream cords, FileOutputStream alt) {
         if (isCallbackDeclared) return;
 
         this.serviceCallback = callback;
         isCallbackDeclared = true;
+
+        this.speeds = speeds;
+        this.cords = cords;
+        this.alt = alt;
     }
 
     public void stopListener() {
@@ -150,6 +161,22 @@ public class BackgroundService extends Service {
             lastAlt = altMetric;
             lastLatitude = latitude;
             lastLongitude = longitude;
+
+            try {
+                BackgroundService.this.speeds.write(
+                        String.format(Locale.ENGLISH, "%.2f ", actualSpeed).getBytes(StandardCharsets.UTF_8)
+                );
+
+                BackgroundService.this.cords.write(
+                        String.format(Locale.ENGLISH, "%f %f  ", longitude, latitude).getBytes(StandardCharsets.UTF_8)
+                );
+
+                BackgroundService.this.alt.write(
+                        String.format(Locale.ENGLISH, "%.2f ", lastAlt).getBytes(StandardCharsets.UTF_8)
+                );
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             serviceCallback.locationUpdated(location, bearing, slope, altMetric, actualSpeed, distance);
         }
