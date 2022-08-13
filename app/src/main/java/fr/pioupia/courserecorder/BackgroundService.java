@@ -174,7 +174,7 @@ public class BackgroundService extends Service {
 
                 distance += dist[0];
 
-                slope = 100 * (lastAlt - altMetric) / (dist[0]);
+                slope = 100 * (altMetric - lastAlt) / (dist[0]);
 
                 if (slope > 100 || slope < -100) {
                     slope = 0;
