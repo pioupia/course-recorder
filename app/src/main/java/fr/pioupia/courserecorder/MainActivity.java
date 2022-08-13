@@ -100,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                         @Override
                         public void run() {
                             if (isServiceBounded) {
+                                backgroundService.setCallback(MainActivity.this);
+
                                 // restore data
                                 isRecording = backgroundService.isRecording;
                                 startPoint = backgroundService.startPoint;
@@ -107,40 +109,37 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                                 pauses = backgroundService.pauses;
                                 index = backgroundService.index;
 
-                                MainActivity.this.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        buttonContainer.setVisibility(View.VISIBLE);
-                                        stopRecording.setVisibility(View.VISIBLE);
+                                MainActivity.this.runOnUiThread(() -> {
+                                    buttonContainer.setVisibility(View.VISIBLE);
+                                    stopRecording.setVisibility(View.VISIBLE);
 
-                                        startRecording.setVisibility(View.GONE);
+                                    startRecording.setVisibility(View.GONE);
 
-                                        if (!isRecording) {
-                                            resumeRecording.setVisibility(View.VISIBLE);
-                                            pauseRecording.setVisibility(View.GONE);
-                                        } else {
-                                            resumeRecording.setVisibility(View.GONE);
-                                            pauseRecording.setVisibility(View.VISIBLE);
-                                        }
+                                    if (!isRecording) {
+                                        resumeRecording.setVisibility(View.VISIBLE);
+                                        pauseRecording.setVisibility(View.GONE);
+                                    } else {
+                                        resumeRecording.setVisibility(View.GONE);
+                                        pauseRecording.setVisibility(View.VISIBLE);
+                                    }
 
-                                        String duration = new DurationManager().getDuration(startingTime);
-                                        durationView.setText("Durée d'enregistrement :" + duration);
-                                        altitudeView.setText("Altitude : " + (int) backgroundService.altMetric + "m");
+                                    String duration = new DurationManager().getDuration(startingTime);
+                                    durationView.setText("Durée d'enregistrement :" + duration);
+                                    altitudeView.setText("Altitude : " + (int) backgroundService.altMetric + "m");
 
-                                        speedView.setText(
-                                                String.format(Locale.FRANCE, "Vitesse : %d km/h", (int) backgroundService.actualSpeed)
+                                    speedView.setText(
+                                            String.format(Locale.FRANCE, "Vitesse : %d km/h", (int) backgroundService.actualSpeed)
+                                    );
+
+                                    if (backgroundService.distance > 1000) {
+                                        double d = (double) backgroundService.distance / 1000;
+                                        distanceView.setText(
+                                                String.format(Locale.FRANCE, "Distance parcourue : %.2f km", d)
                                         );
-
-                                        if (backgroundService.distance > 1000) {
-                                            double d = (double) backgroundService.distance / 1000;
-                                            distanceView.setText(
-                                                    String.format(Locale.FRANCE, "Distance parcourue : %.2f km", d)
-                                            );
-                                        } else {
-                                            distanceView.setText(
-                                                    String.format(Locale.FRANCE, "Distance parcourue : %d m", (int) backgroundService.distance)
-                                            );
-                                        }
+                                    } else {
+                                        distanceView.setText(
+                                                String.format(Locale.FRANCE, "Distance parcourue : %d m", (int) backgroundService.distance)
+                                        );
                                     }
                                 });
 

@@ -108,6 +108,11 @@ public class BackgroundService extends Service {
         }
     }
 
+    public void setCallback(ServiceCallback callback) {
+        this.serviceCallback = callback;
+        isCallbackDeclared = true;
+    }
+
     public void setEssentialData(ServiceCallback callback, FileOutputStream speeds, FileOutputStream cords, FileOutputStream alt, int index) {
         if (isCallbackDeclared) return;
 
