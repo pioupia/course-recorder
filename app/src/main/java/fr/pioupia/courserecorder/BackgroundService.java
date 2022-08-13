@@ -21,6 +21,7 @@ import androidx.annotation.Nullable;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.Locale;
 
 import fr.pioupia.courserecorder.Managers.DirectionManager;
@@ -29,6 +30,13 @@ import fr.pioupia.courserecorder.Managers.DurationManager;
 public class BackgroundService extends Service {
 
     private final IBinder binder = new LocalBinder();
+
+    /* General Data */
+    public boolean isRecording = true;
+    public double[] startPoint = new double[2];
+    public long startingTime = 0;
+    public Array pauses = new Array(1);
+    public int index = 0;
 
     /* Files stream */
     public FileOutputStream speeds = null;
@@ -99,7 +107,7 @@ public class BackgroundService extends Service {
         }
     }
 
-    public void setEssentialData(ServiceCallback callback, FileOutputStream speeds, FileOutputStream cords, FileOutputStream alt) {
+    public void setEssentialData(ServiceCallback callback, FileOutputStream speeds, FileOutputStream cords, FileOutputStream alt, int index) {
         if (isCallbackDeclared) return;
 
         this.serviceCallback = callback;
@@ -108,10 +116,16 @@ public class BackgroundService extends Service {
         this.speeds = speeds;
         this.cords = cords;
         this.alt = alt;
+        this.index = index;
+    }
+
+    public void setPauses(Array pauses) {
+        this.pauses = pauses;
     }
 
     public void stopListener() {
         mLocationManager.removeUpdates(mLocationListener);
+        isRecording = false;
     }
 
     @SuppressLint("MissingPermission")
@@ -121,6 +135,7 @@ public class BackgroundService extends Service {
                 LOCATION_REFRESH_DISTANCE,
                 mLocationListener,
                 Looper.getMainLooper());
+        isRecording = true;
     }
 
 
@@ -156,6 +171,12 @@ public class BackgroundService extends Service {
                 if (slope > 100 || slope < -100) {
                     slope = 0;
                 }
+            } else {
+                startPoint[0] = longitude;
+                startPoint[1] = latitude;
+
+                Date date = new Date();
+                startingTime = date.getTime();
             }
 
             lastAlt = altMetric;
