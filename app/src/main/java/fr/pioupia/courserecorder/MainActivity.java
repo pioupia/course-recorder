@@ -225,7 +225,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                 @Override
                 public void run() {
                     if (isServiceBounded) {
-                        backgroundService.setCallback(MainActivity.this);
+                        backgroundService.setEssentialData(MainActivity.this);
                         timer.cancel();
                         timer.purge();
                     }
@@ -412,38 +412,9 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
         return false;
     }
 
-    public void locationUpdated(Location location) {
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
-        float actualSpeed = location.getSpeed();
-        double slope = 0;
-
+    public void locationUpdated(Location location, double bearing, double slope, double altMetric, float actualSpeed, float distance) {
         String duration = new DurationManager().getDuration(startingTime);
         String direction = new DirectionManager().getDirection(location.getBearing());
-
-        speed += actualSpeed;
-        speedCount++;
-
-        if (maxSpeed < actualSpeed) {
-            maxSpeed = actualSpeed;
-        }
-
-        altMetric = location.getAltitude();
-
-        if (speedCount > 2) {
-            float [] dist = new float[2];
-
-            Location.distanceBetween(lastLatitude, lastLongitude, latitude, longitude, dist);
-
-            distance += dist[0];
-
-            slope = 100 * (lastAlt - altMetric) / (dist[0]);
-        }
-
-        lastAlt = altMetric;
-        lastLatitude = latitude;
-        lastLongitude = longitude;
-
 
         durationView.setText("Durée d'enregistrement :" + duration);
         directionView.setText("Direction : " + direction);
