@@ -19,19 +19,19 @@ public class DurationManager {
         String str = "";
 
         if (days > 0) {
-            str += String.valueOf(days) + "j";
+            str += days + "j";
         }
 
         if (hours > 0) {
-            str += " " + String.valueOf(hours) + "h";
+            str += " " + hours + "h";
         }
 
         if (minutes > 0) {
-            str += " " + String.valueOf(minutes) + "min";
+            str += " " + minutes + "min";
         }
 
         if (duration > 0) {
-            str += " " + String.valueOf(duration) + "s";
+            str += " " + duration + "s";
         }
 
         return str;
