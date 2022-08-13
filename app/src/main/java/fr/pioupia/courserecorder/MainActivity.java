@@ -26,9 +26,11 @@ import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import fr.pioupia.courserecorder.Managers.DirectionManager;
 import fr.pioupia.courserecorder.Managers.DurationManager;
 import fr.pioupia.courserecorder.Managers.PermissionsManager;
 
@@ -50,8 +52,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
     public double lastLatitude = 0;
     public double lastLongitude = 0;
     public float distance = 0;
-    public int altMetric = 0;
-    public int lastAlt = 0;
+    public double altMetric = 0;
+    public double lastAlt = 0;
     public Array pauses = new Array(1);
 
     private int speedCount = 1;
@@ -407,6 +409,54 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
     }
 
     public void locationUpdated(Location location) {
-        System.out.println(location);
+        double latitude = location.getLatitude();
+        double longitude = location.getLongitude();
+        float actualSpeed = location.getSpeed();
+        double slope = 0;
+
+        String duration = new DurationManager().getDuration(startingTime);
+        String direction = new DirectionManager().getDirection(location.getBearing());
+
+        speed += actualSpeed;
+        speedCount++;
+
+        if (maxSpeed < actualSpeed) {
+            maxSpeed = actualSpeed;
+        }
+
+        altMetric = location.getAltitude();
+
+        if (speedCount > 2) {
+            float [] dist = new float[2];
+
+            Location.distanceBetween(lastLatitude, lastLongitude, latitude, longitude, dist);
+
+            distance += dist[0];
+
+            slope = 100 * (lastAlt - altMetric) / (dist[0]);
+        }
+
+        lastAlt = altMetric;
+        lastLatitude = latitude;
+        lastLongitude = longitude;
+
+
+        durationView.setText("Durée d'enregistrement :" + duration);
+        directionView.setText("Direction : " + direction);
+
+        speedView.setText(
+                String.format(Locale.FRANCE, "Vitesse : %d km/h", (int) actualSpeed)
+        );
+
+        if (distance > 1000) {
+            double d = (double) distance / 1000;
+            distanceView.setText(
+                    String.format(Locale.FRANCE, "Distance parcourue : %.2f km", d)
+            );
+        } else {
+            distanceView.setText(
+                    String.format(Locale.FRANCE, "Distance parcourue : %d m", (int) distance)
+            );
+        }
     }
 }
