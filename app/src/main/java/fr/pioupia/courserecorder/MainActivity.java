@@ -71,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
     public TextView distanceView = null;
     public TextView speedView = null;
     public TextView directionView = null;
+    public TextView altitudeView = null;
+    public TextView penteView = null;
 
     /* Background app */
     PermissionsManager permissions = new PermissionsManager();
@@ -175,6 +177,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
         distanceView = findViewById(R.id.distance);
         speedView = findViewById(R.id.speed);
         directionView = findViewById(R.id.direction);
+        altitudeView = findViewById(R.id.altitude);
+        penteView = findViewById(R.id.slop);
 
 
         startRecording.setOnClickListener(v -> {
@@ -443,6 +447,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
         durationView.setText("Durée d'enregistrement :" + duration);
         directionView.setText("Direction : " + direction);
+        penteView.setText("Pente : " + Math.round(slope) + "%");
+        altitudeView.setText("Altitude : " + (int) altMetric + "m");
 
         speedView.setText(
                 String.format(Locale.FRANCE, "Vitesse : %d km/h", (int) actualSpeed)
