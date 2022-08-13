@@ -42,23 +42,14 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
     /* Files stream */
     public FileOutputStream speeds = null;
-    public FileOutputStream coords = null;
+    public FileOutputStream cords = null;
     public FileOutputStream alt = null;
 
     /* Data in real time */
     public boolean isRecording = false;
     public double[] startPoint = new double[2];
     public long startingTime = 0;
-    public double lastLatitude = 0;
-    public double lastLongitude = 0;
-    public float distance = 0;
-    public double altMetric = 0;
-    public double lastAlt = 0;
     public Array pauses = new Array(1);
-
-    private int speedCount = 1;
-    private int speed = 0;
-    private float maxSpeed = 0;
 
     public boolean havePermissions = false;
     public String rootDir = "";
@@ -113,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                      * /records/index (stockage du dernier index en cache)
                      * /records/_temp/{index} (dossier de stockage d'un trajet en cache à l'index {index})
                      *      - /speeds (fichier contenant les vitesses)
-                     *      - /coords (fichier contenant les coordonnées)
+                     *      - /cords (fichier contenant les coordonnées ; long lat long lat)
                      *      - /alt    (fichier content les données altimétriques)
                      *      - /infos (fichier contenant les informations générales en JSON.
                      *          - Date de début (date), date de fin (date)
@@ -122,7 +113,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                      *          - Point de départ, point d'arrivé
                      * /records/data (dossier qui stock tous les trajets parse)
                      * /records/data/index (stockage du dernier index sous la forme : "index du dossier   numéro du record")
-                     * /records/data/{index}/ (speeds/coords/alt/infos - sous forme de tableau), exemple avec speeds :
+                     * /records/data/{index}/ (speeds/cords/alt/infos - sous forme de tableau), exemple avec speeds :
                      * index ...speeds
                      * 0 12 15.00 12.53 88.12 25.32 46.58
                      * 1 12 15.00 12.53 88.12 25.32 46.58
@@ -213,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
             try {
                 String tempDir = rootDir + "/_temp/" + index + "/";
                 speeds = new FileOutputStream(tempDir + "speeds");
-                coords = new FileOutputStream(tempDir + "coords");
+                cords = new FileOutputStream(tempDir + "cords");
                 alt = new FileOutputStream(tempDir + "alt");
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
@@ -225,7 +216,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                 @Override
                 public void run() {
                     if (isServiceBounded) {
-                        backgroundService.setCallback(MainActivity.this);
+                        backgroundService.setEssentialData(MainActivity.this, speeds, cords, alt);
                         timer.cancel();
                         timer.purge();
                     }
@@ -237,10 +228,6 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
             long endTime = new Date().getTime();
 
             backgroundService.stopListener();
-
-            // Stopping background service
-            stopService(intent);
-            unbindService(serviceConnection);
 
             // Reset states
             buttonContainer.setVisibility(View.GONE);
@@ -259,13 +246,13 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                 speeds = null;
             }
 
-            if (coords != null) {
+            if (cords != null) {
                 try {
-                    coords.close();
+                    cords.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                coords = null;
+                cords = null;
             }
 
             if (alt != null) {
@@ -282,6 +269,13 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                 long date = new DurationManager().getMSDuration(pauses.get(pauses.count - 1), endTime);
                 pauses.push(date);
             }
+
+            float distance = backgroundService.distance;
+            int speedCount = backgroundService.speedCount;
+            double speed = backgroundService.speed;
+            double maxSpeed = backgroundService.maxSpeed;
+            double lastLatitude = backgroundService.lastLatitude;
+            double lastLongitude = backgroundService.lastLongitude;
 
             try {
                 FileOutputStream endingData = new FileOutputStream(rootDir + "/_temp/" + index + "/infos");
@@ -331,15 +325,10 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
             isRecording = false;
             startPoint = new double[2];
             startingTime = 0;
-            lastLatitude = 0;
-            lastLongitude = 0;
-            distance = 0;
-            altMetric = 0;
-            lastAlt = 0;
-            pauses = new Array(1);
-            speedCount = 1;
-            speed = 0;
-            maxSpeed = 0;
+
+            // Stopping background service
+            stopService(intent);
+            unbindService(serviceConnection);
         });
 
         pauseRecording.setOnClickListener(view -> {
@@ -412,38 +401,9 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
         return false;
     }
 
-    public void locationUpdated(Location location) {
-        double latitude = location.getLatitude();
-        double longitude = location.getLongitude();
-        float actualSpeed = location.getSpeed();
-        double slope = 0;
-
+    public void locationUpdated(Location location, double bearing, double slope, double altMetric, float actualSpeed, float distance) {
         String duration = new DurationManager().getDuration(startingTime);
         String direction = new DirectionManager().getDirection(location.getBearing());
-
-        speed += actualSpeed;
-        speedCount++;
-
-        if (maxSpeed < actualSpeed) {
-            maxSpeed = actualSpeed;
-        }
-
-        altMetric = location.getAltitude();
-
-        if (speedCount > 2) {
-            float [] dist = new float[2];
-
-            Location.distanceBetween(lastLatitude, lastLongitude, latitude, longitude, dist);
-
-            distance += dist[0];
-
-            slope = 100 * (lastAlt - altMetric) / (dist[0]);
-        }
-
-        lastAlt = altMetric;
-        lastLatitude = latitude;
-        lastLongitude = longitude;
-
 
         durationView.setText("Durée d'enregistrement :" + duration);
         directionView.setText("Direction : " + direction);

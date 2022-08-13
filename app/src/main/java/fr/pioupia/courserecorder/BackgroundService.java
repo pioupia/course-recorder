@@ -18,11 +18,32 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+
+import fr.pioupia.courserecorder.Managers.DirectionManager;
+import fr.pioupia.courserecorder.Managers.DurationManager;
 
 public class BackgroundService extends Service {
 
     private final IBinder binder = new LocalBinder();
+
+    /* Files stream */
+    public FileOutputStream speeds = null;
+    public FileOutputStream cords = null;
+    public FileOutputStream alt = null;
+
+    /* Data */
+    public double lastLatitude = 0;
+    public double lastLongitude = 0;
+    public float distance = 0;
+    public double altMetric = 0;
+    public double lastAlt = 0;
+    public int speedCount = 1;
+    public int speed = 0;
+    public float maxSpeed = 0;
 
     private static final int LOCATION_REFRESH_TIME = 5 * 1000;
     private static final float LOCATION_REFRESH_DISTANCE = 0f;
@@ -78,11 +99,15 @@ public class BackgroundService extends Service {
         }
     }
 
-    public void setCallback(ServiceCallback callback) {
+    public void setEssentialData(ServiceCallback callback, FileOutputStream speeds, FileOutputStream cords, FileOutputStream alt) {
         if (isCallbackDeclared) return;
 
         this.serviceCallback = callback;
         isCallbackDeclared = true;
+
+        this.speeds = speeds;
+        this.cords = cords;
+        this.alt = alt;
     }
 
     public void stopListener() {
@@ -103,13 +128,57 @@ public class BackgroundService extends Service {
         @SuppressLint("MissingPermission")
         @Override
         public void onLocationChanged(final Location location) {
-            Log.d("GPS", "localisation : " + location.toString());
-            String coordonnees = String.format(Locale.FRANCE, "Latitude : %f - Longitude : %f\n", location.getLatitude(), location.getLongitude());
-            Log.d("GPS", "coordonnees : " + coordonnees);
-
             if (!isCallbackDeclared) return;
 
-            serviceCallback.locationUpdated(location);
+            double latitude = location.getLatitude();
+            double longitude = location.getLongitude();
+            double bearing = location.getBearing();
+            double slope = 0;
+            float actualSpeed = location.getSpeed();
+
+            altMetric = location.getAltitude();
+            speed += actualSpeed;
+            speedCount++;
+
+            if (maxSpeed < actualSpeed) {
+                maxSpeed = actualSpeed;
+            }
+
+            if (speedCount > 2) {
+                float [] dist = new float[2];
+
+                Location.distanceBetween(lastLatitude, lastLongitude, latitude, longitude, dist);
+
+                distance += dist[0];
+
+                slope = 100 * (lastAlt - altMetric) / (dist[0]);
+
+                if (slope > 100 || slope < -100) {
+                    slope = 0;
+                }
+            }
+
+            lastAlt = altMetric;
+            lastLatitude = latitude;
+            lastLongitude = longitude;
+
+            try {
+                BackgroundService.this.speeds.write(
+                        String.format(Locale.ENGLISH, "%.2f ", actualSpeed).getBytes(StandardCharsets.UTF_8)
+                );
+
+                BackgroundService.this.cords.write(
+                        String.format(Locale.ENGLISH, "%f %f  ", longitude, latitude).getBytes(StandardCharsets.UTF_8)
+                );
+
+                BackgroundService.this.alt.write(
+                        String.format(Locale.ENGLISH, "%.2f ", lastAlt).getBytes(StandardCharsets.UTF_8)
+                );
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            serviceCallback.locationUpdated(location, bearing, slope, altMetric, actualSpeed, distance);
         }
 
         @Override
@@ -129,6 +198,6 @@ public class BackgroundService extends Service {
     };
 
     interface ServiceCallback {
-        void locationUpdated(Location location);
+        void locationUpdated(Location location, double bearing, double slope, double altMetric, float actualSpeed, float distance);
     }
 }
