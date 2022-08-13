@@ -2,6 +2,7 @@ package fr.pioupia.courserecorder;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.transition.Visibility;
 
 import android.Manifest;
 import android.app.ActivityManager;
@@ -91,8 +92,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
         if (this.foregroundServiceRunning()) {
             ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-            for(ActivityManager.RunningServiceInfo service: activityManager.getRunningServices(Integer.MAX_VALUE)) {
-                if(BackgroundService.class.getName().equals(service.service.getClassName())) {
+            for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
+                if (BackgroundService.class.getName().equals(service.service.getClassName())) {
                     bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 
                     timer.schedule(new TimerTask() {
@@ -106,16 +107,42 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                                 pauses = backgroundService.pauses;
                                 index = backgroundService.index;
 
-                                // https://stackoverflow.com/questions/5161951/android-only-the-original-thread-that-created-a-view-hierarchy-can-touch-its-vi
+                                MainActivity.this.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        buttonContainer.setVisibility(View.VISIBLE);
+                                        stopRecording.setVisibility(View.VISIBLE);
 
-                                startRecording.setVisibility(View.GONE);
-                                stopRecording.setVisibility(View.VISIBLE);
+                                        startRecording.setVisibility(View.GONE);
 
-                                if (!isRecording) {
-                                    resumeRecording.setVisibility(View.VISIBLE);
-                                } else {
-                                    pauseRecording.setVisibility(View.GONE);
-                                }
+                                        if (!isRecording) {
+                                            resumeRecording.setVisibility(View.VISIBLE);
+                                            pauseRecording.setVisibility(View.GONE);
+                                        } else {
+                                            resumeRecording.setVisibility(View.GONE);
+                                            pauseRecording.setVisibility(View.VISIBLE);
+                                        }
+
+                                        String duration = new DurationManager().getDuration(startingTime);
+                                        durationView.setText("Durée d'enregistrement :" + duration);
+                                        altitudeView.setText("Altitude : " + (int) backgroundService.altMetric + "m");
+
+                                        speedView.setText(
+                                                String.format(Locale.FRANCE, "Vitesse : %d km/h", (int) backgroundService.actualSpeed)
+                                        );
+
+                                        if (backgroundService.distance > 1000) {
+                                            double d = (double) backgroundService.distance / 1000;
+                                            distanceView.setText(
+                                                    String.format(Locale.FRANCE, "Distance parcourue : %.2f km", d)
+                                            );
+                                        } else {
+                                            distanceView.setText(
+                                                    String.format(Locale.FRANCE, "Distance parcourue : %d m", (int) backgroundService.distance)
+                                            );
+                                        }
+                                    }
+                                });
 
                                 timer.cancel();
                                 timer.purge();
@@ -352,7 +379,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
             try {
                 FileOutputStream outputStream = new FileOutputStream(rootDir + "/index");
-                outputStream.write((byte) index+1);
+                outputStream.write((byte) index + 1);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -432,10 +459,10 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
         }
     };
 
-    public boolean foregroundServiceRunning(){
+    public boolean foregroundServiceRunning() {
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for(ActivityManager.RunningServiceInfo service: activityManager.getRunningServices(Integer.MAX_VALUE)) {
-            if(BackgroundService.class.getName().equals(service.service.getClassName())) {
+        for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
+            if (BackgroundService.class.getName().equals(service.service.getClassName())) {
                 return true;
             }
         }

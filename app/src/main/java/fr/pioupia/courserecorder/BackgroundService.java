@@ -51,6 +51,7 @@ public class BackgroundService extends Service {
     public double lastAlt = 0;
     public int speedCount = 1;
     public int speed = 0;
+    public float actualSpeed = 0;
     public float maxSpeed = 0;
 
     private static final int LOCATION_REFRESH_TIME = 5 * 1000;
@@ -149,7 +150,9 @@ public class BackgroundService extends Service {
             double longitude = location.getLongitude();
             double bearing = location.getBearing();
             double slope = 0;
-            float actualSpeed = location.getSpeed();
+            actualSpeed = location.getSpeed();
+
+
 
             altMetric = location.getAltitude();
             speed += actualSpeed;
