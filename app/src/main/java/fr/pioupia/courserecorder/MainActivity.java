@@ -49,16 +49,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
     public boolean isRecording = false;
     public double[] startPoint = new double[2];
     public long startingTime = 0;
-    public double lastLatitude = 0;
-    public double lastLongitude = 0;
-    public float distance = 0;
-    public double altMetric = 0;
-    public double lastAlt = 0;
     public Array pauses = new Array(1);
-
-    private int speedCount = 1;
-    private int speed = 0;
-    private float maxSpeed = 0;
 
     public boolean havePermissions = false;
     public String rootDir = "";
@@ -238,10 +229,6 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
             backgroundService.stopListener();
 
-            // Stopping background service
-            stopService(intent);
-            unbindService(serviceConnection);
-
             // Reset states
             buttonContainer.setVisibility(View.GONE);
             resumeRecording.setVisibility(View.GONE);
@@ -282,6 +269,13 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                 long date = new DurationManager().getMSDuration(pauses.get(pauses.count - 1), endTime);
                 pauses.push(date);
             }
+
+            float distance = backgroundService.distance;
+            int speedCount = backgroundService.speedCount;
+            double speed = backgroundService.speed;
+            double maxSpeed = backgroundService.maxSpeed;
+            double lastLatitude = backgroundService.lastLatitude;
+            double lastLongitude = backgroundService.lastLongitude;
 
             try {
                 FileOutputStream endingData = new FileOutputStream(rootDir + "/_temp/" + index + "/infos");
@@ -331,15 +325,10 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
             isRecording = false;
             startPoint = new double[2];
             startingTime = 0;
-            lastLatitude = 0;
-            lastLongitude = 0;
-            distance = 0;
-            altMetric = 0;
-            lastAlt = 0;
-            pauses = new Array(1);
-            speedCount = 1;
-            speed = 0;
-            maxSpeed = 0;
+
+            // Stopping background service
+            stopService(intent);
+            unbindService(serviceConnection);
         });
 
         pauseRecording.setOnClickListener(view -> {
