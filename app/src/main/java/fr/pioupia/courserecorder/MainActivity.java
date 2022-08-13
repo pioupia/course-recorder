@@ -2,6 +2,7 @@ package fr.pioupia.courserecorder;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.transition.Visibility;
 
 import android.Manifest;
 import android.app.ActivityManager;
@@ -36,7 +37,7 @@ import fr.pioupia.courserecorder.Managers.PermissionsManager;
 
 
 public class MainActivity extends AppCompatActivity implements BackgroundService.ServiceCallback {
-    private int index = 0;
+    public int index = 0;
 
     public Timer timer = new Timer();
 
@@ -77,88 +78,6 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
         rootDir = getApplicationInfo().dataDir + "/records";
 
-        File file = new File(rootDir);
-
-        if (!file.exists()) {
-            file.mkdir();
-        }
-
-        file = new File(rootDir + "/index");
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-                if (file.canWrite()) {
-                    FileOutputStream outputStream = new FileOutputStream(rootDir + "/index");
-
-                    /**
-                     * On peut garder en mémoire jusqu'à 127 trajets maximum.
-                     * Ensuite, on upload ça sur le serveur
-                     * Le serveur traite les données
-                     * il renvoie les données en JSON / autre
-                     * On met 30 records / fichier (ou moins, tout dépend de la taille finale du fichier)
-                     * Le nom des fichiers est un index
-                     * Donc en gros, le fichier indexes contiendra :
-                     * numéro du dernier fichier utilisé nombre d'enregistrements
-                     * On a en gros l'architecture suivante :
-                     * /records (dossier des données de trajets)
-                     * /records/index (stockage du dernier index en cache)
-                     * /records/_temp/{index} (dossier de stockage d'un trajet en cache à l'index {index})
-                     *      - /speeds (fichier contenant les vitesses)
-                     *      - /cords (fichier contenant les coordonnées ; long lat long lat)
-                     *      - /alt    (fichier content les données altimétriques)
-                     *      - /infos (fichier contenant les informations générales en JSON.
-                     *          - Date de début (date), date de fin (date)
-                     *          - (liste des pauses (ms)), durée (ms)
-                     *          - Distance (m), vitesse moyenne (km/h), // vitesse max (km/h)
-                     *          - Point de départ, point d'arrivé
-                     * /records/data (dossier qui stock tous les trajets parse)
-                     * /records/data/index (stockage du dernier index sous la forme : "index du dossier   numéro du record")
-                     * /records/data/{index}/ (speeds/cords/alt/infos - sous forme de tableau), exemple avec speeds :
-                     * index ...speeds
-                     * 0 12 15.00 12.53 88.12 25.32 46.58
-                     * 1 12 15.00 12.53 88.12 25.32 46.58
-                     * 2 12 15.00 12.53 88.12 25.32 46.58
-                     * 3 12 15.00 12.53 88.12 25.32 46.58
-                     * 4 12 15.00 12.53 88.12 25.32 46.58
-                     *
-                     * Quand on lance l'enregistrement, les 3 derniers trajets s'en vont de la manière suivante :
-                     * - Le premier pars avec un fondu de l'opacité vers la droite (~50px)
-                     * - Le second pars avec ~50ms/100 de retard, avec un fondu de l'opacité, vers la droite (~50px) & vers le haut (~20px)
-                     * - Le troisième pars avec ~100/200ms de retard, avec un fondu de l'opacité, vers la droite (~50px) & vers le haut (~40px)
-                     */
-
-                    outputStream.write((byte) index);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else {
-            try {
-                RandomAccessFile f = new RandomAccessFile(file, "r");
-                byte[] b = new byte[(int) f.length()];
-                f.readFully(b);
-
-                index = b[0];
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
-        havePermissions = this.permissions.verifyPermissions(MainActivity.this);
-
-        if (!havePermissions) {
-            ActivityCompat.requestPermissions(
-                    MainActivity.this,
-                    new String[]{
-                            Manifest.permission.ACCESS_FINE_LOCATION,
-                            Manifest.permission.ACCESS_COARSE_LOCATION
-                    },
-                    1
-            );
-
-            havePermissions = this.permissions.verifyPermissions(MainActivity.this);
-        }
-
         RelativeLayout buttonContainer = findViewById(R.id.buttonsContainer);
         ImageView startRecording = findViewById(R.id.startRecording);
         ImageView stopRecording = findViewById(R.id.stopRecording);
@@ -170,6 +89,150 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
         directionView = findViewById(R.id.direction);
         altitudeView = findViewById(R.id.altitude);
         penteView = findViewById(R.id.slop);
+
+        if (this.foregroundServiceRunning()) {
+            ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+            for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
+                if (BackgroundService.class.getName().equals(service.service.getClassName())) {
+                    bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            if (isServiceBounded) {
+                                backgroundService.setCallback(MainActivity.this);
+
+                                // restore data
+                                isRecording = backgroundService.isRecording;
+                                startPoint = backgroundService.startPoint;
+                                startingTime = backgroundService.startingTime;
+                                pauses = backgroundService.pauses;
+                                index = backgroundService.index;
+
+                                MainActivity.this.runOnUiThread(() -> {
+                                    buttonContainer.setVisibility(View.VISIBLE);
+                                    stopRecording.setVisibility(View.VISIBLE);
+
+                                    startRecording.setVisibility(View.GONE);
+
+                                    if (!isRecording) {
+                                        resumeRecording.setVisibility(View.VISIBLE);
+                                        pauseRecording.setVisibility(View.GONE);
+                                    } else {
+                                        resumeRecording.setVisibility(View.GONE);
+                                        pauseRecording.setVisibility(View.VISIBLE);
+                                    }
+
+                                    String duration = new DurationManager().getDuration(startingTime);
+                                    durationView.setText("Durée d'enregistrement :" + duration);
+                                    altitudeView.setText("Altitude : " + (int) backgroundService.altMetric + "m");
+
+                                    speedView.setText(
+                                            String.format(Locale.FRANCE, "Vitesse : %d km/h", (int) backgroundService.actualSpeed)
+                                    );
+
+                                    if (backgroundService.distance > 1000) {
+                                        double d = (double) backgroundService.distance / 1000;
+                                        distanceView.setText(
+                                                String.format(Locale.FRANCE, "Distance parcourue : %.2f km", d)
+                                        );
+                                    } else {
+                                        distanceView.setText(
+                                                String.format(Locale.FRANCE, "Distance parcourue : %d m", (int) backgroundService.distance)
+                                        );
+                                    }
+                                });
+
+                                timer.cancel();
+                                timer.purge();
+                            }
+                        }
+                    }, 300, 100);
+                }
+            }
+        } else {
+            File file = new File(rootDir);
+
+            if (!file.exists()) {
+                file.mkdir();
+            }
+
+            file = new File(rootDir + "/index");
+            if (!file.exists()) {
+                try {
+                    file.createNewFile();
+                    if (file.canWrite()) {
+                        FileOutputStream outputStream = new FileOutputStream(rootDir + "/index");
+
+                        /**
+                         * On peut garder en mémoire jusqu'à 127 trajets maximum.
+                         * Ensuite, on upload ça sur le serveur
+                         * Le serveur traite les données
+                         * il renvoie les données en JSON / autre
+                         * On met 30 records / fichier (ou moins, tout dépend de la taille finale du fichier)
+                         * Le nom des fichiers est un index
+                         * Donc en gros, le fichier indexes contiendra :
+                         * numéro du dernier fichier utilisé nombre d'enregistrements
+                         * On a en gros l'architecture suivante :
+                         * /records (dossier des données de trajets)
+                         * /records/index (stockage du dernier index en cache)
+                         * /records/_temp/{index} (dossier de stockage d'un trajet en cache à l'index {index})
+                         *      - /speeds (fichier contenant les vitesses)
+                         *      - /cords (fichier contenant les coordonnées ; long lat long lat)
+                         *      - /alt    (fichier content les données altimétriques)
+                         *      - /infos (fichier contenant les informations générales en JSON.
+                         *          - Date de début (date), date de fin (date)
+                         *          - (liste des pauses (ms)), durée (ms)
+                         *          - Distance (m), vitesse moyenne (km/h), // vitesse max (km/h)
+                         *          - Point de départ, point d'arrivé
+                         * /records/data (dossier qui stock tous les trajets parse)
+                         * /records/data/index (stockage du dernier index sous la forme : "index du dossier   numéro du record")
+                         * /records/data/{index}/ (speeds/cords/alt/infos - sous forme de tableau), exemple avec speeds :
+                         * index ...speeds
+                         * 0 12 15.00 12.53 88.12 25.32 46.58
+                         * 1 12 15.00 12.53 88.12 25.32 46.58
+                         * 2 12 15.00 12.53 88.12 25.32 46.58
+                         * 3 12 15.00 12.53 88.12 25.32 46.58
+                         * 4 12 15.00 12.53 88.12 25.32 46.58
+                         *
+                         * Quand on lance l'enregistrement, les 3 derniers trajets s'en vont de la manière suivante :
+                         * - Le premier pars avec un fondu de l'opacité vers la droite (~50px)
+                         * - Le second pars avec ~50ms/100 de retard, avec un fondu de l'opacité, vers la droite (~50px) & vers le haut (~20px)
+                         * - Le troisième pars avec ~100/200ms de retard, avec un fondu de l'opacité, vers la droite (~50px) & vers le haut (~40px)
+                         */
+
+                        outputStream.write((byte) index);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                try {
+                    RandomAccessFile f = new RandomAccessFile(file, "r");
+                    byte[] b = new byte[(int) f.length()];
+                    f.readFully(b);
+
+                    index = b[0];
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            havePermissions = this.permissions.verifyPermissions(MainActivity.this);
+
+            if (!havePermissions) {
+                ActivityCompat.requestPermissions(
+                        MainActivity.this,
+                        new String[]{
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                        },
+                        1
+                );
+
+                havePermissions = this.permissions.verifyPermissions(MainActivity.this);
+            }
+        }
 
 
         startRecording.setOnClickListener(v -> {
@@ -216,7 +279,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                 @Override
                 public void run() {
                     if (isServiceBounded) {
-                        backgroundService.setEssentialData(MainActivity.this, speeds, cords, alt);
+                        backgroundService.setEssentialData(MainActivity.this, speeds, cords, alt, index);
                         timer.cancel();
                         timer.purge();
                     }
@@ -315,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
             try {
                 FileOutputStream outputStream = new FileOutputStream(rootDir + "/index");
-                outputStream.write((byte) index+1);
+                outputStream.write((byte) index + 1);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -342,6 +405,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
             long date = new Date().getTime();
             pauses.push(date);
+
+            backgroundService.setPauses(pauses);
         });
 
         resumeRecording.setOnClickListener(view -> {
@@ -374,6 +439,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                     );
 
             pauses.push(date);
+
+            backgroundService.setPauses(pauses);
         });
     }
 
@@ -391,10 +458,10 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
         }
     };
 
-    public boolean foregroundServiceRunning(){
+    public boolean foregroundServiceRunning() {
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for(ActivityManager.RunningServiceInfo service: activityManager.getRunningServices(Integer.MAX_VALUE)) {
-            if(BackgroundService.class.getName().equals(service.service.getClassName())) {
+        for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
+            if (BackgroundService.class.getName().equals(service.service.getClassName())) {
                 return true;
             }
         }
