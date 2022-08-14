@@ -21,59 +21,74 @@
         android:shadowRadius="4"
         android:textColor="@color/white" />
 
-    <TextView
-        android:id="@+id/duration"
+    <RelativeLayout
+        android:id="@+id/statsContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Durée d'enregistrement : 0 minute"
-        android:layout_below="@+id/title"
         android:layout_centerHorizontal="true"
-        android:textColor="@color/white"/>
+        android:layout_below="@id/title">
+        <TextView
+            android:id="@+id/duration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Durée d'enregistrement : 0 minute"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/white"/>
 
-    <TextView
-        android:id="@+id/distance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Distance parcourue : 0m"
-        android:layout_below="@id/duration"
-        android:layout_centerHorizontal="true"
-        android:textColor="@color/white"/>
+        <TextView
+            android:id="@+id/distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Distance parcourue : 0m"
+            android:layout_below="@id/duration"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/white"/>
 
-    <TextView
-        android:id="@+id/speed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Vitesse : 0 km/h"
-        android:layout_below="@id/distance"
-        android:layout_centerHorizontal="true"
-        android:textColor="@color/white" />
+        <TextView
+            android:id="@+id/speed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vitesse : 0 km/h"
+            android:layout_below="@id/distance"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/white" />
 
-    <TextView
-        android:id="@+id/direction"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Direction : N"
-        android:layout_below="@id/speed"
-        android:layout_centerHorizontal="true"
-        android:textColor="@color/white" />
+        <TextView
+            android:id="@+id/direction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Direction : N"
+            android:layout_below="@id/speed"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/white" />
 
-    <TextView
-        android:id="@+id/altitude"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Altitude : 0m"
-        android:layout_below="@id/direction"
-        android:layout_centerHorizontal="true"
-        android:textColor="@color/white" />
+        <TextView
+            android:id="@+id/altitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Altitude : 0m"
+            android:layout_below="@id/direction"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/white" />
 
-    <TextView
-        android:id="@+id/slop"
+        <TextView
+            android:id="@+id/slop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pente : 0%"
+            android:layout_below="@id/altitude"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/white" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/lastTrips"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Pente : 0%"
-        android:layout_below="@id/altitude"
-        android:layout_centerHorizontal="true"
-        android:textColor="@color/white" />
+        android:layout_centerHorizontal="true">
+
+    </RelativeLayout>
+
 
     <ImageView
         android:id="@+id/startRecording"
