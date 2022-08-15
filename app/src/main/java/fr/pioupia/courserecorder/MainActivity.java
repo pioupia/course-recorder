@@ -541,7 +541,15 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
             RecyclerView tripsContainer = findViewById(R.id.tripsContainer);
             RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this.getApplicationContext(), lastTrips);
             tripsContainer.setAdapter(recyclerViewAdapter);
-            tripsContainer.setLayoutManager(new LinearLayoutManager(this.getApplicationContext()));
+
+            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getApplicationContext()) {
+                @Override
+                public boolean canScrollVertically() {
+                    return false;
+                }
+            };
+
+            tripsContainer.setLayoutManager(linearLayoutManager);
         }
     }
 }
