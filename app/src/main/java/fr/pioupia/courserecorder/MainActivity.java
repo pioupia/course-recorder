@@ -88,6 +88,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
         rootDir = getApplicationInfo().dataDir + "/records";
 
+        RecyclerView tripsContainer = findViewById(R.id.tripsContainer);
+        RelativeLayout statsContainer = findViewById(R.id.statsContainer);
         RelativeLayout buttonContainer = findViewById(R.id.buttonsContainer);
         ImageView startRecording = findViewById(R.id.startRecording);
         ImageView stopRecording = findViewById(R.id.stopRecording);
@@ -120,6 +122,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                                 index = backgroundService.index;
 
                                 MainActivity.this.runOnUiThread(() -> {
+                                    statsContainer.setVisibility(View.VISIBLE);
+                                    tripsContainer.setVisibility(View.GONE);
                                     buttonContainer.setVisibility(View.VISIBLE);
                                     stopRecording.setVisibility(View.VISIBLE);
 
@@ -222,7 +226,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                     byte[] b = new byte[(int) f.length()];
                     f.readFully(b);
 
-                    index = b[0];
+                    index = b[0] - 2;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -265,6 +269,9 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
             v.setVisibility(View.GONE);
             buttonContainer.setVisibility(View.VISIBLE);
+
+            statsContainer.setVisibility(View.VISIBLE);
+            tripsContainer.setVisibility(View.GONE);
 
             Date date = new Date();
 
@@ -310,6 +317,9 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
             startRecording.setVisibility(View.VISIBLE);
             pauseRecording.setVisibility(View.VISIBLE);
+
+            statsContainer.setVisibility(View.GONE);
+            tripsContainer.setVisibility(View.VISIBLE);
 
             isRecording = false;
             if (speeds != null) {
@@ -388,9 +398,11 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                 e.printStackTrace();
             }
 
+            index++;
+
             try {
                 FileOutputStream outputStream = new FileOutputStream(rootDir + "/index");
-                outputStream.write((byte) index + 1);
+                outputStream.write((byte) index);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -404,6 +416,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
             // Stopping background service
             stopService(intent);
             unbindService(serviceConnection);
+
+            setupLastTripData();
         });
 
         pauseRecording.setOnClickListener(view -> {
@@ -507,6 +521,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
     public void setupLastTripData() {
         if (this.index != 0) {
+            lastTrips.clear();
+
             for (int i = this.index - 1; i > this.index - 4; i--) {
                 File file = new File(rootDir + "/_temp/" + i + "/infos");
                 try {
