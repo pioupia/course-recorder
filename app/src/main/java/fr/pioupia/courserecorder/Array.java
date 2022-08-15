@@ -1,7 +1,7 @@
 package fr.pioupia.courserecorder;
 
 public class Array {
-    private long arr[];
+    private long[] arr;
     public int count;
 
     // Note they can only be called through function
@@ -32,7 +32,7 @@ public class Array {
 
             // Creating a new array double the size
             // of array declared above
-            long newArr[] = new long[2 * count];
+            long[] newArr = new long[2 * count];
 
             // Iterating over new array using for loop
             for (int i = 0; i < count; i++) {

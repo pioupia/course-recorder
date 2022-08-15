@@ -13,7 +13,6 @@ import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,9 +22,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Locale;
-
-import fr.pioupia.courserecorder.Managers.DirectionManager;
-import fr.pioupia.courserecorder.Managers.DurationManager;
 
 public class BackgroundService extends Service {
 

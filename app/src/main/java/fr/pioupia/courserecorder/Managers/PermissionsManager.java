@@ -61,12 +61,7 @@ public class PermissionsManager {
             new AlertDialog.Builder(context)
                     .setTitle("localization services required")
                     .setMessage("The localisation service is not enabled")
-                    .setPositiveButton("Enable GPS", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface paramDialogInterface, int paramInt) {
-                            context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-                        }
-                    })
+                    .setPositiveButton("Enable GPS", (paramDialogInterface, paramInt) -> context.startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS)))
                     .setNegativeButton("Cancel", null)
                     .show();
             return true;
