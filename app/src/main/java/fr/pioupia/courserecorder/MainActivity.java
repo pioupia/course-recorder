@@ -5,6 +5,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.transition.Visibility;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -25,15 +26,20 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import fr.pioupia.courserecorder.Managers.DirectionManager;
 import fr.pioupia.courserecorder.Managers.DurationManager;
 import fr.pioupia.courserecorder.Managers.PermissionsManager;
+import fr.pioupia.courserecorder.Models.TripData;
 
 
 public class MainActivity extends AppCompatActivity implements BackgroundService.ServiceCallback {
@@ -68,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
     /* Background app */
     PermissionsManager permissions = new PermissionsManager();
+
+    public ArrayList<TripData> lastTrips = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                                         pauseRecording.setVisibility(View.VISIBLE);
                                     }
 
-                                    String duration = new DurationManager().getDuration(startingTime);
+                                    String duration = new DurationManager().getDurationFromStartingDate(startingTime);
                                     durationView.setText("Durée d'enregistrement :" + duration);
                                     altitudeView.setText("Altitude : " + (int) backgroundService.altMetric + "m");
 
@@ -217,6 +225,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                     e.printStackTrace();
                 }
             }
+
+            setupLastTripData();
 
             havePermissions = this.permissions.verifyPermissions(MainActivity.this);
 
@@ -469,7 +479,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
     }
 
     public void locationUpdated(Location location, double bearing, double slope, double altMetric, float actualSpeed, float distance) {
-        String duration = new DurationManager().getDuration(startingTime);
+        String duration = new DurationManager().getDurationFromStartingDate(startingTime);
         String direction = new DirectionManager().getDirection(location.getBearing());
 
         durationView.setText("Durée d'enregistrement :" + duration);
@@ -490,6 +500,38 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
             distanceView.setText(
                     String.format(Locale.FRANCE, "Distance parcourue : %d m", (int) distance)
             );
+        }
+    }
+
+    public void setupLastTripData() {
+        if (this.index != 0) {
+            for (int i = this.index - 1; i > this.index - 4; i--) {
+                File file = new File(rootDir + "/_temp/" + i + "/infos");
+                try {
+                    Scanner myReader = new Scanner(file);
+                    if (myReader.hasNextLine()) {
+                        String data = myReader.nextLine();
+                        String[] args = data.split(" ");
+
+                        Date date = new Date();
+                        date.setTime(Long.parseLong(args[0]));
+
+                        SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy - HH:mm", Locale.FRANCE);
+                        String startTripDate = formatter.format(date);
+                        startTripDate = startTripDate.replace(":", "h");
+
+                        String duration = new DurationManager().getDuration(Integer.parseInt(args[2]));
+                        Float distance = Float.parseFloat(args[3]);
+
+                        System.out.println(startTripDate);
+                        System.out.println(duration);
+                        System.out.println(distance);
+                    }
+                    myReader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }
