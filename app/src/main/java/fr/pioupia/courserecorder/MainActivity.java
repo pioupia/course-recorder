@@ -539,7 +539,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                         startTripDate = startTripDate.replace(":", "h");
 
                         String duration = new DurationManager().getDuration(Integer.parseInt(args[2]));
-                        Float distance = Float.parseFloat(args[3]);
+                        Float distance = Float.parseFloat(args[3]) / 1000;
 
                         TripData tripData = new TripData(startTripDate, String.format(Locale.FRANCE,
                                 "%.2f Km - %s",
