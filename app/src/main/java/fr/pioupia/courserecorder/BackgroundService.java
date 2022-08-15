@@ -157,8 +157,6 @@ public class BackgroundService extends Service {
             double slope = 0;
             actualSpeed = location.getSpeed();
 
-
-
             altMetric = location.getAltitude();
             speed += actualSpeed;
             speedCount++;
