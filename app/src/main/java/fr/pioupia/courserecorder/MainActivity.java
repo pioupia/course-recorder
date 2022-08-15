@@ -504,7 +504,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
         altitudeView.setText("Altitude : " + (int) altMetric + "m");
 
         speedView.setText(
-                String.format(Locale.FRANCE, "Vitesse : %d km/h", (int) actualSpeed)
+                String.format(Locale.FRANCE, "Vitesse : %d km/h", (int) (actualSpeed * 3600 / 1000))
         );
 
         if (distance > 1000) {
