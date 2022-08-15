@@ -538,7 +538,6 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                     e.printStackTrace();
                 }
             }
-
             RecyclerView tripsContainer = findViewById(R.id.tripsContainer);
             RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this.getApplicationContext(), lastTrips);
             tripsContainer.setAdapter(recyclerViewAdapter);
