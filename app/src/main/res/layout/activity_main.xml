@@ -14,7 +14,7 @@
         android:layout_marginTop="26dp"
         android:fontFamily="@font/mina_bold"
         android:text="Course Recorder"
-        android:textSize="36dp"
+        android:textSize="36sp"
         android:shadowColor="#26FFFFFF"
         android:shadowDx="0"
         android:shadowDy="4"
@@ -26,7 +26,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/title">
+        android:layout_below="@id/title"
+        android:visibility="gone">
         <TextView
             android:id="@+id/duration"
             android:layout_width="wrap_content"
@@ -81,13 +82,13 @@
             android:textColor="@color/white" />
     </RelativeLayout>
 
-    <RelativeLayout
-        android:id="@+id/lastTrips"
-        android:layout_width="wrap_content"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/tripsContainer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true">
+        android:layout_below="@+id/title">
 
-    </RelativeLayout>
+    </androidx.recyclerview.widget.RecyclerView>
 
 
     <ImageView
