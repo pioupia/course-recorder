@@ -3,10 +3,13 @@ package fr.pioupia.courserecorder.Managers;
 import java.util.Date;
 
 public class DurationManager {
-    public String getDuration(long start) {
+    public String getDurationFromStartingDate(long start) {
         Date date = new Date();
         int duration = (int) ((date.getTime() - start) * 1e-3);
 
+        return getDuration(duration);
+    }
+    public String getDuration(int duration) {
         int days = duration / 86400;
         duration -= days * 86400;
 
