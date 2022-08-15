@@ -22,19 +22,19 @@ public class DurationManager {
         String str = "";
 
         if (days > 0) {
-            str += days + "j";
+            str += days + "j ";
         }
 
         if (hours > 0) {
-            str += " " + hours + "h";
+            str += hours + " h";
         }
 
         if (minutes > 0) {
-            str += " " + minutes + "min";
+            str += minutes + " min";
         }
 
         if (duration > 0) {
-            str += " " + duration + "s";
+            str += duration + " s";
         }
 
         return str;
