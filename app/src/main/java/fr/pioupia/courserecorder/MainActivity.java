@@ -2,6 +2,8 @@ package fr.pioupia.courserecorder;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.transition.Visibility;
 
 import android.Manifest;
@@ -523,15 +525,24 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                         String duration = new DurationManager().getDuration(Integer.parseInt(args[2]));
                         Float distance = Float.parseFloat(args[3]);
 
-                        System.out.println(startTripDate);
-                        System.out.println(duration);
-                        System.out.println(distance);
+                        TripData tripData = new TripData(startTripDate, String.format(Locale.FRANCE,
+                                "%.2f Km - %s",
+                                distance,
+                                duration
+                        ));
+
+                        lastTrips.add(tripData);
                     }
                     myReader.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
+
+            RecyclerView tripsContainer = findViewById(R.id.tripsContainer);
+            RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this.getApplicationContext(), lastTrips);
+            tripsContainer.setAdapter(recyclerViewAdapter);
+            tripsContainer.setLayoutManager(new LinearLayoutManager(this.getApplicationContext()));
         }
     }
 }
