@@ -1,6 +1,7 @@
 package fr.pioupia.courserecorder.Managers;
 
 import java.util.Date;
+import java.util.Locale;
 
 public class DurationManager {
     public String getDurationFromStartingDate(long start) {
@@ -22,19 +23,19 @@ public class DurationManager {
         String str = "";
 
         if (days > 0) {
-            str += days + "j ";
+            str += "j ";
         }
 
         if (hours > 0) {
-            str += hours + " h";
+            str += hours + "h ";
         }
 
         if (minutes > 0) {
-            str += minutes + " min";
+            str += minutes + "min ";
         }
 
         if (duration > 0) {
-            str += duration + " s";
+            str += duration + "s";
         }
 
         return str;
