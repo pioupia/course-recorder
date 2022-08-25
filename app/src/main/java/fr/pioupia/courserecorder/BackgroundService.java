@@ -216,7 +216,7 @@ public class BackgroundService extends Service {
             if (speedCount % 2 == 0) {
                 createNotification(
                         String.format(Locale.FRANCE,
-                                "Votre trajet est en cours d'enregistrement.\nDurée : %s\ndistance : %.2fkm\nVitesse moyenne : %.2fkm/h\nVitesse max : %.2fkm/h",
+                                "Votre trajet est en cours d'enregistrement.\nDurée : %s\nDistance : %.2fkm\nVitesse moyenne : %.2fkm/h\nVitesse max : %.2fkm/h",
                                 new DurationManager().getDurationFromStartingDate(startingTime),
                                 distance / 1000,
                                 ((float) speed / speedCount) * 36 / 10,
