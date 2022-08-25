@@ -16,12 +16,15 @@ import android.os.Looper;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Locale;
+
+import fr.pioupia.courserecorder.Managers.DurationManager;
 
 public class BackgroundService extends Service {
 
@@ -62,22 +65,7 @@ public class BackgroundService extends Service {
     @SuppressLint("MissingPermission")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String channelId = "CourseRecorder.237";
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    channelId,
-                    channelId,
-                    NotificationManager.IMPORTANCE_LOW
-            );
-
-            getSystemService(NotificationManager.class).createNotificationChannel(channel);
-            Notification.Builder notification = new Notification.Builder(this, channelId)
-                    .setContentText("The service is running")
-                    .setContentTitle("Course Recorder")
-                    .setSmallIcon(R.drawable.ic_launcher_background);
-
-            startForeground(1001, notification.build());
-        }
+        createNotification("Votre trajet est en cours d'enregistrement.\nDurée : 0min | distance : 0m");
 
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -89,6 +77,30 @@ public class BackgroundService extends Service {
                 Looper.getMainLooper());
 
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    public void createNotification(String contentText) {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            String channelId = "CourseRecorder.237";
+
+            NotificationChannel channel = new NotificationChannel(
+                    channelId,
+                    channelId,
+                    NotificationManager.IMPORTANCE_LOW
+            );
+
+            getSystemService(NotificationManager.class).createNotificationChannel(channel);
+
+            Notification notification = new Notification.Builder(this, channelId)
+                    .setContentText(contentText)
+                    .setContentTitle("Course Recorder")
+                    .setSmallIcon(R.drawable.ic_launcher_background)
+                    .setStyle(new Notification.BigTextStyle()
+                            .bigText(contentText))
+                    .build();
+
+            startForeground(1001, notification);
+        }
     }
 
     @Nullable
@@ -199,6 +211,18 @@ public class BackgroundService extends Service {
                 );
             } catch (IOException e) {
                 e.printStackTrace();
+            }
+
+            if (speedCount % 2 == 0) {
+                createNotification(
+                        String.format(Locale.FRANCE,
+                                "Votre trajet est en cours d'enregistrement.\nDurée : %s\ndistance : %.2fkm\nVitesse moyenne : %.2fkm/h\nVitesse max : %.2fkm/h",
+                                new DurationManager().getDurationFromStartingDate(startingTime),
+                                distance / 1000,
+                                ((float) speed / speedCount) * 36 / 10,
+                                maxSpeed * 36 / 10
+                        )
+                );
             }
 
             serviceCallback.locationUpdated(location, bearing, slope, altMetric, actualSpeed, distance);
