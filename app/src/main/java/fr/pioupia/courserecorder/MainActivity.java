@@ -186,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                     byte[] b = new byte[(int) f.length()];
                     f.readFully(b);
 
-                    index = b[0] - 2;
+                    index = b[0];
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -480,52 +480,53 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
     }
 
     public void setupLastTripData() {
-        if (this.index != 0) {
-            lastTrips.clear();
+        if (this.index < 1) return;
+        lastTrips.clear();
 
-            for (int i = this.index - 1; i > this.index - 4; i--) {
-                File file = new File(rootDir + "/_temp/" + i + "/infos");
-                try {
-                    Scanner myReader = new Scanner(file);
-                    if (myReader.hasNextLine()) {
-                        String data = myReader.nextLine();
-                        String[] args = data.split(" ");
+        for (int i = this.index - 1; i > this.index - 4; i--) {
+            if (i < 0) break;
 
-                        Date date = new Date();
-                        date.setTime(Long.parseLong(args[0]));
+            File file = new File(rootDir + "/_temp/" + i + "/infos");
+            try {
+                Scanner myReader = new Scanner(file);
+                if (myReader.hasNextLine()) {
+                    String data = myReader.nextLine();
+                    String[] args = data.split(" ");
 
-                        SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy - HH:mm", Locale.FRANCE);
-                        String startTripDate = formatter.format(date);
-                        startTripDate = startTripDate.replace(":", "h");
+                    Date date = new Date();
+                    date.setTime(Long.parseLong(args[0]));
 
-                        String duration = new DurationManager().getDuration(Integer.parseInt(args[2]));
-                        Float distance = Float.parseFloat(args[3]) / 1000;
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy - HH:mm", Locale.FRANCE);
+                    String startTripDate = formatter.format(date);
+                    startTripDate = startTripDate.replace(":", "h");
 
-                        TripData tripData = new TripData(startTripDate, String.format(Locale.FRANCE,
-                                "%.2f Km - %s",
-                                distance,
-                                duration
-                        ));
+                    String duration = new DurationManager().getDuration(Integer.parseInt(args[2]));
+                    Float distance = Float.parseFloat(args[3]) / 1000;
 
-                        lastTrips.add(tripData);
-                    }
-                    myReader.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    TripData tripData = new TripData(startTripDate, String.format(Locale.FRANCE,
+                            "%.2f Km - %s",
+                            distance,
+                            duration
+                    ));
+
+                    lastTrips.add(tripData);
                 }
+                myReader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            RecyclerView tripsContainer = findViewById(R.id.tripsContainer);
-            RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this.getApplicationContext(), lastTrips);
-            tripsContainer.setAdapter(recyclerViewAdapter);
-
-            LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getApplicationContext()) {
-                @Override
-                public boolean canScrollVertically() {
-                    return false;
-                }
-            };
-
-            tripsContainer.setLayoutManager(linearLayoutManager);
         }
+        RecyclerView tripsContainer = findViewById(R.id.tripsContainer);
+        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this.getApplicationContext(), lastTrips);
+        tripsContainer.setAdapter(recyclerViewAdapter);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getApplicationContext()) {
+            @Override
+            public boolean canScrollVertically() {
+                return false;
+            }
+        };
+
+        tripsContainer.setLayoutManager(linearLayoutManager);
     }
 }
