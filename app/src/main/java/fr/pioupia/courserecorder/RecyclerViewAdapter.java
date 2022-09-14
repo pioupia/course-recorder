@@ -18,6 +18,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     Context context;
     ArrayList<TripData> arrayList;
 
+    public static int imageId = R.drawable.preview;
+
     public RecyclerViewAdapter(Context context, ArrayList<TripData> arrayList) {
         this.context = context;
         this.arrayList = arrayList;
@@ -35,6 +37,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(@NonNull RecyclerViewAdapter.ViewHolder holder, int position) {
         holder.title.setText(arrayList.get(position).getTitle());
         holder.description.setText(arrayList.get(position).getDescription());
+        holder.imageView.setImageResource(imageId);
     }
 
     @Override
