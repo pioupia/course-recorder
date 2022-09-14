@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Course Recorder</string>
+    <string name="trippreview">TripPreview</string>
 </resources>

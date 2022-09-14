@@ -27,7 +27,8 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/preview" />
+                app:srcCompat="@drawable/preview"
+                android:contentDescription="@string/trippreview" />
 
             <TextView
                 android:id="@+id/date_trip"
