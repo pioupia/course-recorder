@@ -496,7 +496,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                     Date date = new Date();
                     date.setTime(Long.parseLong(args[0]));
 
-                    SimpleDateFormat formatter = new SimpleDateFormat("dd MMMM yyyy - HH:mm", Locale.FRANCE);
+                    SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy - HH:mm", Locale.FRANCE);
                     String startTripDate = formatter.format(date);
                     startTripDate = startTripDate.replace(":", "h");
 
