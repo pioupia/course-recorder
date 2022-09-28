@@ -1,6 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/background_app"
+    tools:context=".Activites.DetailsTripsActivity">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        app:srcCompat="@drawable/preview"
+        android:contentDescription="@string/trippreview" />
+
+
+    <TextView
+        android:id="@+id/tripTitle"
+        android:layout_below="@id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Trajet n°1"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="31dp"
+        android:fontFamily="@font/mina_bold"
+        android:layout_centerHorizontal="true"
+        />
+
+    <RelativeLayout
+        android:layout_below="@id/tripTitle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="40dp"
+        android:paddingRight="50dp"
+        android:paddingLeft="50dp">
+        <TextView
+            android:id="@+id/startText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="• Début : 21 août 2022 à 14h21"
+            android:textColor="@color/white"
+            android:textSize="17dp"
+            android:fontFamily="@font/mina"
+            />
+
+        <TextView
+            android:id="@+id/endText"
+            android:layout_below="@id/startText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="• Fin : 22 août 2022 à 14h20"
+            android:textColor="@color/white"
+            android:textSize="17dp"
+            android:fontFamily="@font/mina"
+            />
+
+        <TextView
+            android:id="@+id/durationText"
+            android:layout_below="@id/endText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="• Durée : 24h 59min 59s"
+            android:textColor="@color/white"
+            android:textSize="17dp"
+            android:fontFamily="@font/mina"
+            />
+
+        <TextView
+            android:id="@+id/distanceText"
+            android:layout_below="@id/durationText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="• Distance : 9999 Km"
+            android:textColor="@color/white"
+            android:textSize="17dp"
+            android:fontFamily="@font/mina"
+            />
+
+        <TextView
+            android:id="@+id/speedAverageText"
+            android:layout_below="@id/distanceText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="• Vitesse moyenne : 99 km/h"
+            android:textColor="@color/white"
+            android:textSize="17dp"
+            android:fontFamily="@font/mina"
+            />
+
+        <TextView
+            android:id="@+id/maxSpeedText"
+            android:layout_below="@id/speedAverageText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="• Vitesse max : 99 km/h"
+            android:textColor="@color/white"
+            android:textSize="17dp"
+            android:fontFamily="@font/mina"
+            />
+
+        <TextView
+            android:id="@+id/pauseText"
+            android:layout_below="@id/maxSpeedText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="• Pause : 59 min"
+            android:textColor="@color/white"
+            android:textSize="17dp"
+            android:fontFamily="@font/mina"
+            />
+    </RelativeLayout>
+
+</RelativeLayout>

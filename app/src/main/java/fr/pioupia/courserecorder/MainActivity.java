@@ -35,13 +35,14 @@ import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import fr.pioupia.courserecorder.Activites.DetailsTripsActivity;
 import fr.pioupia.courserecorder.Managers.DirectionManager;
 import fr.pioupia.courserecorder.Managers.DurationManager;
 import fr.pioupia.courserecorder.Managers.PermissionsManager;
 import fr.pioupia.courserecorder.Models.TripData;
 
 
-public class MainActivity extends AppCompatActivity implements BackgroundService.ServiceCallback {
+public class MainActivity extends AppCompatActivity implements BackgroundService.ServiceCallback, RecyclerViewInterface {
     public int index = 0;
 
     public Timer timer = new Timer();
@@ -517,7 +518,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
             }
         }
         RecyclerView tripsContainer = findViewById(R.id.tripsContainer);
-        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this.getApplicationContext(), lastTrips);
+        RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this.getApplicationContext(), lastTrips, this);
         tripsContainer.setAdapter(recyclerViewAdapter);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getApplicationContext()) {
@@ -528,5 +529,16 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
         };
 
         tripsContainer.setLayoutManager(linearLayoutManager);
+    }
+
+    @Override
+    public void onItemClick(int position) {
+        int elementIndex = index - position - 1;
+
+        Intent intent = new Intent(MainActivity.this, DetailsTripsActivity.class);
+
+        intent.putExtra("ID", elementIndex);
+
+        startActivity(intent);
     }
 }
