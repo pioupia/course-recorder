@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Scanner;
 
 import fr.pioupia.courserecorder.Array;
@@ -104,6 +105,10 @@ public class DetailsTripsActivity extends AppCompatActivity {
                     }
 
                     String pauseDurationString = new DurationManager().getDuration((int) pauseDuration / 1000);
+
+                    if (Objects.equals(pauseDurationString, "")) {
+                        pauseDurationString = "0s !";
+                    }
 
                     pauseDurationText.setText(
                             String.format(
