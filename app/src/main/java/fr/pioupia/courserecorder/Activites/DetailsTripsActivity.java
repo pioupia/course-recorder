@@ -71,7 +71,7 @@ public class DetailsTripsActivity extends AppCompatActivity {
                 start.setTime(Long.parseLong(args[0]));
 
                 Date end = new Date();
-                end.setTime(Long.parseLong(args[0]));
+                end.setTime(Long.parseLong(args[1]));
 
                 SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy à HH:mm", Locale.FRANCE);
                 String startTripDate = formatter.format(start);
