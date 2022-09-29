@@ -40,12 +40,9 @@ public class DetailsTripsActivity extends AppCompatActivity {
             return;
         }
 
-<<<<<<< HEAD
+        TextView tripTitle = findViewById(R.id.tripTitle);
         TextView startingPointText = findViewById(R.id.startPositionText);
         TextView endingPointText = findViewById(R.id.endPositionText);
-=======
-        TextView tripTitle = findViewById(R.id.tripTitle);
->>>>>>> f205436 (Fix: fix trip number)
         TextView startingDate = findViewById(R.id.startText);
         TextView endingDate = findViewById(R.id.endText);
         TextView distanceText = findViewById(R.id.distanceText);
