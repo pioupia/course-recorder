@@ -24,7 +24,7 @@
         android:text="Trajet n°1"
         android:textColor="@color/white"
         android:textStyle="bold"
-        android:textSize="31dp"
+        android:textSize="31sp"
         android:fontFamily="@font/mina_bold"
         android:layout_centerHorizontal="true"
         />
@@ -36,13 +36,38 @@
         android:layout_marginTop="40dp"
         android:paddingRight="50dp"
         android:paddingLeft="50dp">
+
+        <TextView
+            android:id="@+id/startPositionText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="Départ : Position inconnue"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:fontFamily="@font/mina"
+            />
+
+        <TextView
+            android:id="@+id/endPositionText"
+            android:layout_below="@id/startPositionText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:text="Arrivée : Position inconnue"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:fontFamily="@font/mina"
+            />
+
         <TextView
             android:id="@+id/startText"
+            android:layout_below="@+id/endPositionText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="• Début : 21 août 2022 à 14h21"
             android:textColor="@color/white"
-            android:textSize="17dp"
+            android:textSize="17sp"
             android:fontFamily="@font/mina"
             />
 
@@ -53,7 +78,7 @@
             android:layout_height="wrap_content"
             android:text="• Fin : 22 août 2022 à 14h20"
             android:textColor="@color/white"
-            android:textSize="17dp"
+            android:textSize="17sp"
             android:fontFamily="@font/mina"
             />
 
@@ -64,7 +89,7 @@
             android:layout_height="wrap_content"
             android:text="• Durée : 24h 59min 59s"
             android:textColor="@color/white"
-            android:textSize="17dp"
+            android:textSize="17sp"
             android:fontFamily="@font/mina"
             />
 
@@ -75,7 +100,7 @@
             android:layout_height="wrap_content"
             android:text="• Distance : 9999 Km"
             android:textColor="@color/white"
-            android:textSize="17dp"
+            android:textSize="17sp"
             android:fontFamily="@font/mina"
             />
 
@@ -86,7 +111,7 @@
             android:layout_height="wrap_content"
             android:text="• Vitesse moyenne : 99 km/h"
             android:textColor="@color/white"
-            android:textSize="17dp"
+            android:textSize="17sp"
             android:fontFamily="@font/mina"
             />
 
@@ -97,7 +122,7 @@
             android:layout_height="wrap_content"
             android:text="• Vitesse max : 99 km/h"
             android:textColor="@color/white"
-            android:textSize="17dp"
+            android:textSize="17sp"
             android:fontFamily="@font/mina"
             />
 
@@ -108,7 +133,7 @@
             android:layout_height="wrap_content"
             android:text="• Pause : 59 min"
             android:textColor="@color/white"
-            android:textSize="17dp"
+            android:textSize="17sp"
             android:fontFamily="@font/mina"
             />
     </RelativeLayout>

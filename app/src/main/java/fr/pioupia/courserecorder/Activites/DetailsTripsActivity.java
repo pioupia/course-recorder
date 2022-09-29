@@ -1,6 +1,8 @@
 package fr.pioupia.courserecorder.Activites;
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -9,16 +11,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Scanner;
 
-import fr.pioupia.courserecorder.Array;
 import fr.pioupia.courserecorder.MainActivity;
 import fr.pioupia.courserecorder.Managers.DurationManager;
-import fr.pioupia.courserecorder.Models.TripData;
 import fr.pioupia.courserecorder.R;
 
 public class DetailsTripsActivity extends AppCompatActivity {
@@ -40,6 +40,8 @@ public class DetailsTripsActivity extends AppCompatActivity {
             return;
         }
 
+        TextView startingPointText = findViewById(R.id.startPositionText);
+        TextView endingPointText = findViewById(R.id.endPositionText);
         TextView startingDate = findViewById(R.id.startText);
         TextView endingDate = findViewById(R.id.endText);
         TextView distanceText = findViewById(R.id.distanceText);
@@ -72,8 +74,37 @@ public class DetailsTripsActivity extends AppCompatActivity {
 
                 String duration = new DurationManager().getDuration(Integer.parseInt(args[2]));
                 Float distance = Float.parseFloat(args[3]) / 1000;
-                double average = Float.parseFloat(args[4]) * 3.6;
-                double maxSpeed = Float.parseFloat(args[5]) * 3.6;
+                double average = Double.parseDouble(args[4]) * 3.6;
+                double maxSpeed = Double.parseDouble(args[5]) * 3.6;
+
+                double startLong = Double.parseDouble(args[6]);
+                double startLat = Double.parseDouble(args[7]);
+                double endLong = Double.parseDouble(args[8]);
+                double endLat = Double.parseDouble(args[9]);
+
+                Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+                List<Address> locationStart = geocoder.getFromLocation(startLat, startLong, 1);
+                List<Address> locationEnd = geocoder.getFromLocation(endLat, endLong, 1);
+
+                if (locationStart.size() > 0) {
+                    startingPointText.setText(
+                            String.format(
+                                    Locale.FRANCE,
+                                    "Départ : %s.",
+                                    locationStart.get(0).getAddressLine(0)
+                            )
+                    );
+                }
+
+                if (locationEnd.size() > 0) {
+                    endingPointText.setText(
+                            String.format(
+                                    Locale.FRANCE,
+                                    "Arrivée : %s.",
+                                    locationEnd.get(0).getAddressLine(0)
+                            )
+                    );
+                }
 
                 startingDate.setText(
                         "• Début : " + startTripDate

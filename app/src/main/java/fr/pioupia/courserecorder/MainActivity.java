@@ -269,6 +269,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
         stopRecording.setOnClickListener(view -> {
             long endTime = new Date().getTime();
+            startPoint = backgroundService.startPoint;
 
             backgroundService.stopListener();
 
