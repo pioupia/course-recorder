@@ -9,10 +9,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Scanner;
 
+import fr.pioupia.courserecorder.Array;
 import fr.pioupia.courserecorder.MainActivity;
 import fr.pioupia.courserecorder.Managers.DurationManager;
 import fr.pioupia.courserecorder.Models.TripData;
@@ -43,6 +45,7 @@ public class DetailsTripsActivity extends AppCompatActivity {
         TextView durationText = findViewById(R.id.durationText);
         TextView speedAverageText = findViewById(R.id.speedAverageText);
         TextView maxSpeedText = findViewById(R.id.maxSpeedText);
+        TextView pauseDurationText = findViewById(R.id.pauseText);
 
 
 
@@ -89,6 +92,27 @@ public class DetailsTripsActivity extends AppCompatActivity {
                 maxSpeedText.setText(
                         String.format(Locale.FRANCE, "• Vitesse max : %.1f km/h", maxSpeed)
                 );
+
+                if (myReader.hasNextLine()) {
+                    data = myReader.nextLine();
+                    args = data.substring(1, data.length() - 1).split(", ");
+
+                    int pauseDuration = 0;
+
+                    for (int i = 1; i < args.length; i += 2) {
+                        pauseDuration += Integer.parseInt(args[i]);
+                    }
+
+                    String pauseDurationString = new DurationManager().getDuration((int) pauseDuration / 1000);
+
+                    pauseDurationText.setText(
+                            String.format(
+                                    Locale.FRANCE,
+                                    "• Pause : %s",
+                                    pauseDurationString
+                            )
+                    );
+                }
             }
             myReader.close();
         } catch (IOException e) {
