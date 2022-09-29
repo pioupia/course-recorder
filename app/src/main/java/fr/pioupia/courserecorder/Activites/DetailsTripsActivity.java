@@ -40,8 +40,12 @@ public class DetailsTripsActivity extends AppCompatActivity {
             return;
         }
 
+<<<<<<< HEAD
         TextView startingPointText = findViewById(R.id.startPositionText);
         TextView endingPointText = findViewById(R.id.endPositionText);
+=======
+        TextView tripTitle = findViewById(R.id.tripTitle);
+>>>>>>> f205436 (Fix: fix trip number)
         TextView startingDate = findViewById(R.id.startText);
         TextView endingDate = findViewById(R.id.endText);
         TextView distanceText = findViewById(R.id.distanceText);
@@ -50,6 +54,13 @@ public class DetailsTripsActivity extends AppCompatActivity {
         TextView maxSpeedText = findViewById(R.id.maxSpeedText);
         TextView pauseDurationText = findViewById(R.id.pauseText);
 
+        tripTitle.setText(
+                String.format(
+                        Locale.FRANCE,
+                        "Trajet n°%d",
+                        id+1
+                )
+        );
 
 
         try {
