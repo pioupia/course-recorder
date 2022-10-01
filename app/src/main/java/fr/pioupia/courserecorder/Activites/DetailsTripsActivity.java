@@ -6,10 +6,12 @@ import android.location.Geocoder;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -35,10 +37,23 @@ public class DetailsTripsActivity extends AppCompatActivity {
         File file = new File(rootDir + id + "/infos");
 
         if (!file.exists()) {
+            System.out.println("File does not exist.");
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
             return;
         }
+
+        boolean hasInternetAvailable = isInternetAvailable();
+
+        if (!hasInternetAvailable) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Internet connection required")
+                    .setMessage("The internet connection is not enabled, so your data can't load")
+                    .setPositiveButton("Ok", null)
+                    .setNegativeButton("Cancel", (paramDialogInterface, paramInt) -> this.startActivity(new Intent(this, MainActivity.class)))
+                    .show();
+        }
+
 
         TextView tripTitle = findViewById(R.id.tripTitle);
         TextView startingPointText = findViewById(R.id.startPositionText);
@@ -90,36 +105,38 @@ public class DetailsTripsActivity extends AppCompatActivity {
                 double endLong = Double.parseDouble(args[8]);
                 double endLat = Double.parseDouble(args[9]);
 
-                Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-                List<Address> locationStart = geocoder.getFromLocation(startLat, startLong, 1);
-                List<Address> locationEnd = geocoder.getFromLocation(endLat, endLong, 1);
+                if (hasInternetAvailable) {
+                    Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+                    List<Address> locationStart = geocoder.getFromLocation(startLat, startLong, 1);
+                    List<Address> locationEnd = geocoder.getFromLocation(endLat, endLong, 1);
 
-                if (locationStart.size() > 0) {
-                    startingPointText.setText(
-                            String.format(
-                                    Locale.FRANCE,
-                                    "Départ : %s.",
-                                    locationStart.get(0).getAddressLine(0)
-                            )
+                    if (locationStart.size() > 0) {
+                        startingPointText.setText(
+                                String.format(
+                                        Locale.FRANCE,
+                                        "Départ : %s.",
+                                        locationStart.get(0).getAddressLine(0)
+                                )
+                        );
+                    }
+
+                    if (locationEnd.size() > 0) {
+                        endingPointText.setText(
+                                String.format(
+                                        Locale.FRANCE,
+                                        "Arrivée : %s.",
+                                        locationEnd.get(0).getAddressLine(0)
+                                )
+                        );
+                    }
+
+                    startingDate.setText(
+                            "• Début : " + startTripDate
+                    );
+                    endingDate.setText(
+                            "• Fin : " + endTripDate
                     );
                 }
-
-                if (locationEnd.size() > 0) {
-                    endingPointText.setText(
-                            String.format(
-                                    Locale.FRANCE,
-                                    "Arrivée : %s.",
-                                    locationEnd.get(0).getAddressLine(0)
-                            )
-                    );
-                }
-
-                startingDate.setText(
-                        "• Début : " + startTripDate
-                );
-                endingDate.setText(
-                        "• Fin : " + endTripDate
-                );
                 durationText.setText(
                         "• Durée : " + duration
                 );
@@ -166,4 +183,15 @@ public class DetailsTripsActivity extends AppCompatActivity {
             startActivity(intent);
         }
     }
+
+    public boolean isInternetAvailable() {
+        try {
+            InetAddress ipAddr = InetAddress.getByName("google.com");
+            return !ipAddr.equals("");
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 }
