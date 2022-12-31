@@ -1,8 +1,11 @@
 package fr.pioupia.courserecorder.Activites;
 
+import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
+import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.TextView;
 
@@ -12,12 +15,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Scanner;
+import java.util.concurrent.ExecutionException;
 
 import fr.pioupia.courserecorder.MainActivity;
 import fr.pioupia.courserecorder.Managers.DurationManager;
@@ -70,7 +75,7 @@ public class DetailsTripsActivity extends AppCompatActivity {
                 String.format(
                         Locale.FRANCE,
                         "Trajet n°%d",
-                        id+1
+                        id + 1
                 )
         );
 
@@ -129,14 +134,15 @@ public class DetailsTripsActivity extends AppCompatActivity {
                                 )
                         );
                     }
-
-                    startingDate.setText(
-                            "• Début : " + startTripDate
-                    );
-                    endingDate.setText(
-                            "• Fin : " + endTripDate
-                    );
                 }
+
+                startingDate.setText(
+                        "• Début : " + startTripDate
+                );
+                endingDate.setText(
+                        "• Fin : " + endTripDate
+                );
+
                 durationText.setText(
                         "• Durée : " + duration
                 );
@@ -185,13 +191,26 @@ public class DetailsTripsActivity extends AppCompatActivity {
     }
 
     public boolean isInternetAvailable() {
-        try {
-            InetAddress ipAddr = InetAddress.getByName("google.com");
-            return !ipAddr.equals("");
-
-        } catch (Exception e) {
-            return false;
-        }
+        return getInetAddressByName("google.com") != null;
     }
 
+    public static InetAddress getInetAddressByName(String name) {
+        AsyncTask<String, Void, InetAddress> task = new AsyncTask<String, Void, InetAddress>() {
+
+            @Override
+            protected InetAddress doInBackground(String... params) {
+                try {
+                    return InetAddress.getByName(params[0]);
+                } catch (UnknownHostException e) {
+                    return null;
+                }
+            }
+        };
+
+        try {
+            return task.execute(name).get();
+        } catch (InterruptedException | ExecutionException e) {
+            return null;
+        }
+    }
 }

@@ -14,7 +14,7 @@ public class RecyclerViewItemTouchHelper {
 
             @Override
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                return viewHolder.getAdapterPosition();
+                viewHolder.getAdapterPosition();
             }
 
             @Override
