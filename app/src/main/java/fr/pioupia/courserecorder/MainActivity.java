@@ -36,6 +36,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import fr.pioupia.courserecorder.Activites.DetailsTripsActivity;
+import fr.pioupia.courserecorder.Adapters.TripsList.RecyclerViewAdapter;
+import fr.pioupia.courserecorder.Adapters.TripsList.RecyclerViewInterface;
 import fr.pioupia.courserecorder.Managers.DirectionManager;
 import fr.pioupia.courserecorder.Managers.DurationManager;
 import fr.pioupia.courserecorder.Managers.PermissionsManager;
