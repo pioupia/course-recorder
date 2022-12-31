@@ -1,4 +1,4 @@
-package fr.pioupia.courserecorder;
+package fr.pioupia.courserecorder.Adapters.TripsList;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,11 +8,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
 import fr.pioupia.courserecorder.Models.TripData;
+import fr.pioupia.courserecorder.R;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
     private final RecyclerViewInterface recyclerViewInterface;
@@ -48,6 +50,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public int getItemCount() {
         return arrayList.size();
     }
+
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
