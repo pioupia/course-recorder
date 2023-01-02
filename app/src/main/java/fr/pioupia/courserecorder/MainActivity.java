@@ -1,7 +1,11 @@
 package fr.pioupia.courserecorder;
 
+import static fr.pioupia.courserecorder.Managers.DirectoryManager.deleteDirectory;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,6 +15,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Canvas;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -38,6 +43,8 @@ import java.util.TimerTask;
 import fr.pioupia.courserecorder.Activites.DetailsTripsActivity;
 import fr.pioupia.courserecorder.Adapters.TripsList.RecyclerViewAdapter;
 import fr.pioupia.courserecorder.Adapters.TripsList.RecyclerViewInterface;
+import fr.pioupia.courserecorder.Adapters.TripsList.RecyclerViewSwipeController;
+import fr.pioupia.courserecorder.Adapters.TripsList.SwipeControllerActions;
 import fr.pioupia.courserecorder.Managers.DirectionManager;
 import fr.pioupia.courserecorder.Managers.DurationManager;
 import fr.pioupia.courserecorder.Managers.PermissionsManager;
@@ -520,9 +527,31 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                 e.printStackTrace();
             }
         }
+
         RecyclerView tripsContainer = findViewById(R.id.tripsContainer);
         RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this.getApplicationContext(), lastTrips, this);
         tripsContainer.setAdapter(recyclerViewAdapter);
+
+        RecyclerViewSwipeController swipeController = new RecyclerViewSwipeController(
+                getApplicationContext(),
+                new SwipeControllerActions() {
+                    @Override
+                    public void onRightClicked(int position) {
+                        lastTrips.remove(position);
+                        recyclerViewAdapter.notifyItemRemoved(position);
+                        recyclerViewAdapter.notifyItemRangeChanged(position, recyclerViewAdapter.getItemCount());
+                    }
+                }
+        );
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeController);
+        itemTouchHelper.attachToRecyclerView(tripsContainer);
+
+        tripsContainer.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                swipeController.onDraw(c);
+            }
+        });
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getApplicationContext()) {
             @Override

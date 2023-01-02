@@ -8,8 +8,6 @@
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp"
         app:cardBackgroundColor="@color/black"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp"
@@ -20,7 +18,9 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
 
             <ImageView
                 android:id="@+id/imageView"
@@ -43,6 +43,7 @@
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:textSize="24sp"
+                android:fontFamily="@font/mina_bold"
                 android:text="23 mai 1995 - 14h00" />
 
             <TextView
