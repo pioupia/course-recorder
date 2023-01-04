@@ -1,8 +1,7 @@
 package fr.pioupia.courserecorder;
 
-import static fr.pioupia.courserecorder.Managers.DirectoryManager.deleteDirectory;
-
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
@@ -20,6 +19,7 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -46,6 +46,7 @@ import fr.pioupia.courserecorder.Adapters.TripsList.RecyclerViewInterface;
 import fr.pioupia.courserecorder.Adapters.TripsList.RecyclerViewSwipeController;
 import fr.pioupia.courserecorder.Adapters.TripsList.SwipeControllerActions;
 import fr.pioupia.courserecorder.Managers.DirectionManager;
+import fr.pioupia.courserecorder.Managers.DirectoryManager;
 import fr.pioupia.courserecorder.Managers.DurationManager;
 import fr.pioupia.courserecorder.Managers.PermissionsManager;
 import fr.pioupia.courserecorder.Models.TripData;
@@ -540,6 +541,53 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                         lastTrips.remove(position);
                         recyclerViewAdapter.notifyItemRemoved(position);
                         recyclerViewAdapter.notifyItemRangeChanged(position, recyclerViewAdapter.getItemCount());
+
+                        // Deleting the item in directories
+                        int positionInDirectory = index - position - 1;
+                        File file = new File(rootDir + "/_temp/" + positionInDirectory + "/");
+                        if (!file.exists()) return;
+
+                        try {
+                            DirectoryManager.deleteDirectory(file);
+
+                            int minimum = 0;
+                            for (int i = 0; i < index; i++) {
+                                File dir = new File(rootDir + "/_temp/" + i + "/");
+
+                                if (!dir.exists()) minimum++;
+                                else break;
+                            }
+
+                            int gap = minimum;
+                            for (int i = minimum; i < index; i++) {
+                                File dir = new File(rootDir + "/_temp/" + i + "/");
+
+                                if (!dir.exists()) {
+                                    gap++;
+                                    continue;
+                                }
+
+                                dir.renameTo(new File(rootDir + "/_temp/" + (i - gap) + "/"));
+                            }
+
+                            index -= gap;
+
+                            try {
+                                FileOutputStream outputStream = new FileOutputStream(rootDir + "/index");
+                                outputStream.write((byte) index);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setTitle("Enregistrement supprimé avec succès !")
+                                    .setMessage(
+                                            String.format("Le trajet n°%s a été supprimé avec succès !", positionInDirectory + 1)
+                                    )
+                                    .setPositiveButton("OK", null)
+                                    .show();
+                        } catch (Error ignored) {
+                        }
                     }
                 }
         );
