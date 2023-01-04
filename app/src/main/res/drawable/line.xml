@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:height="2dp"
+    android:width="9dp">
     <item android:gravity="center">
         <rotate android:fromDegrees="90"
             android:toDegrees="90">
             <shape android:shape="line">
                 <stroke
-                    android:width="10dp"
+                    android:width="7dp"
                     android:color="#40000000" />
             </shape>
         </rotate>
@@ -17,7 +20,7 @@
             android:toDegrees="90">
             <shape android:shape="line">
                 <stroke
-                    android:width="10dp"
+                    android:width="7dp"
                     android:color="@color/white" />
             </shape>
         </rotate>

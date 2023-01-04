@@ -5,8 +5,8 @@
         android:drawable="@drawable/button" />
     <item android:gravity="center">
         <shape android:shape="rectangle">
-            <size android:width="30dp"
-                android:height="30dp" />
+            <size android:width="20dp"
+                android:height="20dp" />
             <solid android:color="#40000000" />
             <corners android:radius="4px" />
         </shape>
@@ -14,10 +14,9 @@
     <item android:gravity="center"
         android:bottom="2px">
         <shape android:shape="rectangle">
-            <size android:width="30dp"
-                android:height="30dp" />
+            <size android:width="20dp"
+                android:height="20dp" />
             <solid android:color="@color/white" />
-            <corners android:radius="4px" />
         </shape>
     </item>
 </layer-list>
