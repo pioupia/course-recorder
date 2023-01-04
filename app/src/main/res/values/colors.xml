@@ -2,6 +2,7 @@
 <resources>
     <color name="red_max">#FF0000</color>
     <color name="red_dark">#F30000</color>
+    <color name="red_smooth">#CF3026</color>
     <color name="red_gradient">#1d0000</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
