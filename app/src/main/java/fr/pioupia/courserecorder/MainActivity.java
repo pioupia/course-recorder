@@ -1,7 +1,10 @@
 package fr.pioupia.courserecorder;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -11,10 +14,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Canvas;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -38,7 +43,10 @@ import java.util.TimerTask;
 import fr.pioupia.courserecorder.Activites.DetailsTripsActivity;
 import fr.pioupia.courserecorder.Adapters.TripsList.RecyclerViewAdapter;
 import fr.pioupia.courserecorder.Adapters.TripsList.RecyclerViewInterface;
+import fr.pioupia.courserecorder.Adapters.TripsList.RecyclerViewSwipeController;
+import fr.pioupia.courserecorder.Adapters.TripsList.SwipeControllerActions;
 import fr.pioupia.courserecorder.Managers.DirectionManager;
+import fr.pioupia.courserecorder.Managers.DirectoryManager;
 import fr.pioupia.courserecorder.Managers.DurationManager;
 import fr.pioupia.courserecorder.Managers.PermissionsManager;
 import fr.pioupia.courserecorder.Models.TripData;
@@ -520,9 +528,78 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                 e.printStackTrace();
             }
         }
+
         RecyclerView tripsContainer = findViewById(R.id.tripsContainer);
         RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(this.getApplicationContext(), lastTrips, this);
         tripsContainer.setAdapter(recyclerViewAdapter);
+
+        RecyclerViewSwipeController swipeController = new RecyclerViewSwipeController(
+                getApplicationContext(),
+                new SwipeControllerActions() {
+                    @Override
+                    public void onRightClicked(int position) {
+                        lastTrips.remove(position);
+                        recyclerViewAdapter.notifyItemRemoved(position);
+                        recyclerViewAdapter.notifyItemRangeChanged(position, recyclerViewAdapter.getItemCount());
+
+                        // Deleting the item in directories
+                        int positionInDirectory = index - position - 1;
+                        File file = new File(rootDir + "/_temp/" + positionInDirectory + "/");
+                        if (!file.exists()) return;
+
+                        try {
+                            DirectoryManager.deleteDirectory(file);
+
+                            int minimum = 0;
+                            for (int i = 0; i < index; i++) {
+                                File dir = new File(rootDir + "/_temp/" + i + "/");
+
+                                if (!dir.exists()) minimum++;
+                                else break;
+                            }
+
+                            int gap = minimum;
+                            for (int i = minimum; i < index; i++) {
+                                File dir = new File(rootDir + "/_temp/" + i + "/");
+
+                                if (!dir.exists()) {
+                                    gap++;
+                                    continue;
+                                }
+
+                                dir.renameTo(new File(rootDir + "/_temp/" + (i - gap) + "/"));
+                            }
+
+                            index -= gap;
+
+                            try {
+                                FileOutputStream outputStream = new FileOutputStream(rootDir + "/index");
+                                outputStream.write((byte) index);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            new AlertDialog.Builder(MainActivity.this)
+                                    .setTitle("Enregistrement supprimé avec succès !")
+                                    .setMessage(
+                                            String.format("Le trajet n°%s a été supprimé avec succès !", positionInDirectory + 1)
+                                    )
+                                    .setPositiveButton("OK", null)
+                                    .show();
+                        } catch (Error ignored) {
+                        }
+                    }
+                }
+        );
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(swipeController);
+        itemTouchHelper.attachToRecyclerView(tripsContainer);
+
+        tripsContainer.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(@NonNull Canvas c, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
+                swipeController.onDraw(c);
+            }
+        });
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this.getApplicationContext()) {
             @Override
