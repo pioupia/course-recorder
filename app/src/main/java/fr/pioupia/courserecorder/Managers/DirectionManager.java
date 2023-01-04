@@ -1,7 +1,7 @@
 package fr.pioupia.courserecorder.Managers;
 
 public class DirectionManager {
-    public String getDirection (float bearing) {
+    public static String getDirection (float bearing) {
         if (bearing >= 354.375 && bearing < 39.375) {
             return "N";
         }

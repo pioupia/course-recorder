@@ -1,10 +1,8 @@
 package fr.pioupia.courserecorder.Activites;
 
-import android.content.Context;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
-import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.TextView;
@@ -100,7 +98,7 @@ public class DetailsTripsActivity extends AppCompatActivity {
                 startTripDate = startTripDate.replace(":", "h");
                 endTripDate = endTripDate.replace(":", "h");
 
-                String duration = new DurationManager().getDuration(Integer.parseInt(args[2]));
+                String duration = DurationManager.getDuration(Integer.parseInt(args[2]));
                 Float distance = Float.parseFloat(args[3]) / 1000;
                 double average = Double.parseDouble(args[4]) * 3.6;
                 double maxSpeed = Double.parseDouble(args[5]) * 3.6;
@@ -166,7 +164,7 @@ public class DetailsTripsActivity extends AppCompatActivity {
                         pauseDuration += Integer.parseInt(args[i]);
                     }
 
-                    String pauseDurationString = new DurationManager().getDuration((int) pauseDuration / 1000);
+                    String pauseDurationString = DurationManager.getDuration((int) pauseDuration / 1000);
 
                     if (Objects.equals(pauseDurationString, "")) {
                         pauseDurationString = "0s !";

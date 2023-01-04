@@ -14,7 +14,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 
 public class PermissionsManager {
-    public boolean askPermissions(Activity activity, Context context, boolean havePermissions) {
+    public static boolean askPermissions(Activity activity, Context context, boolean havePermissions) {
         if (!havePermissions) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 ActivityCompat.requestPermissions(
@@ -38,18 +38,18 @@ public class PermissionsManager {
 
             }
 
-            havePermissions = this.verifyPermissions(context);
+            havePermissions = verifyPermissions(context);
         }
         return havePermissions;
     }
 
-    public boolean verifyPermissions(Context context) {
+    public static boolean verifyPermissions(Context context) {
         return !(ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && (!(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) || ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED));
     }
 
-    public boolean locationEnabled(Context context) {
+    public static boolean locationEnabled(Context context) {
         LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         boolean gps_enabled = false;
         try {
