@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import fr.pioupia.courserecorder.Managers.DurationManager;
+import fr.pioupia.courserecorder.Managers.IndexManager;
 
 public class BackgroundService extends Service {
 
@@ -111,7 +112,7 @@ public class BackgroundService extends Service {
     }
 
     public class LocalBinder extends Binder {
-        BackgroundService getService() {
+        public BackgroundService getService() {
             // fetching data
             return BackgroundService.this;
         }
@@ -122,7 +123,7 @@ public class BackgroundService extends Service {
         isCallbackDeclared = true;
     }
 
-    public void setEssentialData(ServiceCallback callback, FileOutputStream speeds, FileOutputStream cords, FileOutputStream alt, int index) {
+    public void setEssentialData(ServiceCallback callback, FileOutputStream speeds, FileOutputStream cords, FileOutputStream alt) {
         if (isCallbackDeclared) return;
 
         this.serviceCallback = callback;
@@ -131,7 +132,7 @@ public class BackgroundService extends Service {
         this.speeds = speeds;
         this.cords = cords;
         this.alt = alt;
-        this.index = index;
+        this.index = IndexManager.getIndex();
     }
 
     public void setPauses(Array pauses) {
@@ -218,7 +219,7 @@ public class BackgroundService extends Service {
                 createNotification(
                         String.format(Locale.FRANCE,
                                 "Votre trajet est en cours d'enregistrement.\nDurée : %s\nDistance : %.2fkm\nVitesse moyenne : %.2fkm/h\nVitesse max : %.2fkm/h",
-                                new DurationManager().getDurationFromStartingDate(startingTime),
+                                DurationManager.getDurationFromStartingDate(startingTime),
                                 distance / 1000,
                                 ((float) speed / speedCount) * 36 / 10,
                                 maxSpeed * 36 / 10
@@ -245,7 +246,7 @@ public class BackgroundService extends Service {
         }
     };
 
-    interface ServiceCallback {
+    public interface ServiceCallback {
         void locationUpdated(Location location, double bearing, double slope, double altMetric, float actualSpeed, float distance);
     }
 }

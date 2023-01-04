@@ -1,16 +1,15 @@
 package fr.pioupia.courserecorder.Managers;
 
 import java.util.Date;
-import java.util.Locale;
 
 public class DurationManager {
-    public String getDurationFromStartingDate(long start) {
+    public static String getDurationFromStartingDate(long start) {
         Date date = new Date();
         int duration = (int) ((date.getTime() - start) * 1e-3);
 
         return getDuration(duration);
     }
-    public String getDuration(int duration) {
+    public static String getDuration(int duration) {
         int days = duration / 86400;
         duration -= days * 86400;
 
@@ -41,11 +40,11 @@ public class DurationManager {
         return str;
     }
 
-    public long getMSDuration(long deb, long end) {
+    public static long getMSDuration(long deb, long end) {
         return end - deb;
     }
 
-    public long getPathDuration(long start, long end, long[] pauses) {
+    public static long getPathDuration(long start, long end, long[] pauses) {
         long removeDuration = 0;
         for (int i = 1; i < pauses.length; i += 2) {
             removeDuration += pauses[i];

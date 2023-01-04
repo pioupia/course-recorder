@@ -10,16 +10,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.app.ActivityManager;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Canvas;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.provider.Settings;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -29,7 +25,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,13 +43,13 @@ import fr.pioupia.courserecorder.Adapters.TripsList.SwipeControllerActions;
 import fr.pioupia.courserecorder.Managers.DirectionManager;
 import fr.pioupia.courserecorder.Managers.DirectoryManager;
 import fr.pioupia.courserecorder.Managers.DurationManager;
+import fr.pioupia.courserecorder.Managers.ForegroundServiceManager;
+import fr.pioupia.courserecorder.Managers.IndexManager;
 import fr.pioupia.courserecorder.Managers.PermissionsManager;
 import fr.pioupia.courserecorder.Models.TripData;
 
 
 public class MainActivity extends AppCompatActivity implements BackgroundService.ServiceCallback, RecyclerViewInterface {
-    public int index = 0;
-
     public Timer timer = new Timer();
 
     /* Files stream */
@@ -71,9 +66,6 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
     public boolean havePermissions = false;
     public String rootDir = "";
 
-    public boolean isServiceBounded = false;
-    public BackgroundService backgroundService;
-
     /* View */
     public TextView durationView = null;
     public TextView distanceView = null;
@@ -81,9 +73,6 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
     public TextView directionView = null;
     public TextView altitudeView = null;
     public TextView penteView = null;
-
-    /* Background app */
-    PermissionsManager permissions = new PermissionsManager();
 
     public ArrayList<TripData> lastTrips = new ArrayList<>();
 
@@ -95,6 +84,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
         Intent intent = new Intent(MainActivity.this, BackgroundService.class);
 
         rootDir = getApplicationInfo().dataDir + "/records";
+        IndexManager.setRootDir(rootDir);
 
         RecyclerView tripsContainer = findViewById(R.id.tripsContainer);
         RelativeLayout statsContainer = findViewById(R.id.statsContainer);
@@ -112,66 +102,10 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
         if (this.foregroundServiceRunning()) {
             ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-            for (ActivityManager.RunningServiceInfo service : activityManager.getRunningServices(Integer.MAX_VALUE)) {
-                if (BackgroundService.class.getName().equals(service.service.getClassName())) {
-                    bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-
-                    timer.schedule(new TimerTask() {
-                        @Override
-                        public void run() {
-                            if (isServiceBounded) {
-                                backgroundService.setCallback(MainActivity.this);
-
-                                // restore data
-                                isRecording = backgroundService.isRecording;
-                                startPoint = backgroundService.startPoint;
-                                startingTime = backgroundService.startingTime;
-                                pauses = backgroundService.pauses;
-                                index = backgroundService.index;
-
-                                MainActivity.this.runOnUiThread(() -> {
-                                    statsContainer.setVisibility(View.VISIBLE);
-                                    tripsContainer.setVisibility(View.GONE);
-                                    buttonContainer.setVisibility(View.VISIBLE);
-                                    stopRecording.setVisibility(View.VISIBLE);
-
-                                    startRecording.setVisibility(View.GONE);
-
-                                    if (!isRecording) {
-                                        resumeRecording.setVisibility(View.VISIBLE);
-                                        pauseRecording.setVisibility(View.GONE);
-                                    } else {
-                                        resumeRecording.setVisibility(View.GONE);
-                                        pauseRecording.setVisibility(View.VISIBLE);
-                                    }
-
-                                    String duration = new DurationManager().getDurationFromStartingDate(startingTime);
-                                    durationView.setText("Durée d'enregistrement :" + duration);
-                                    altitudeView.setText("Altitude : " + (int) backgroundService.altMetric + "m");
-
-                                    speedView.setText(
-                                            String.format(Locale.FRANCE, "Vitesse : %d km/h", (int) backgroundService.actualSpeed)
-                                    );
-
-                                    if (backgroundService.distance > 1000) {
-                                        double d = (double) backgroundService.distance / 1000;
-                                        distanceView.setText(
-                                                String.format(Locale.FRANCE, "Distance parcourue : %.2f km", d)
-                                        );
-                                    } else {
-                                        distanceView.setText(
-                                                String.format(Locale.FRANCE, "Distance parcourue : %d m", (int) backgroundService.distance)
-                                        );
-                                    }
-                                });
-
-                                timer.cancel();
-                                timer.purge();
-                            }
-                        }
-                    }, 300, 100);
-                }
-            }
+            ForegroundServiceManager.restoreData(
+                    activityManager, MainActivity.this, intent, this,
+                    statsContainer, buttonContainer, tripsContainer, stopRecording, startRecording,
+                    resumeRecording, pauseRecording);
         } else {
             File file = new File(rootDir);
 
@@ -179,33 +113,11 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                 file.mkdir();
             }
 
-            file = new File(rootDir + "/index");
-            if (!file.exists()) {
-                try {
-                    file.createNewFile();
-                    if (file.canWrite()) {
-                        FileOutputStream outputStream = new FileOutputStream(rootDir + "/index");
-
-                        outputStream.write((byte) index);
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                try {
-                    RandomAccessFile f = new RandomAccessFile(file, "r");
-                    byte[] b = new byte[(int) f.length()];
-                    f.readFully(b);
-
-                    index = b[0];
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            IndexManager.init();
 
             setupLastTripData();
 
-            havePermissions = this.permissions.verifyPermissions(MainActivity.this);
+            havePermissions = PermissionsManager.verifyPermissions(MainActivity.this);
 
             if (!havePermissions) {
                 ActivityCompat.requestPermissions(
@@ -217,16 +129,16 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                         1
                 );
 
-                havePermissions = this.permissions.verifyPermissions(MainActivity.this);
+                havePermissions = PermissionsManager.verifyPermissions(MainActivity.this);
             }
         }
 
 
         startRecording.setOnClickListener(v -> {
-            havePermissions = permissions.askPermissions(MainActivity.this, MainActivity.this, havePermissions);
+            havePermissions = PermissionsManager.askPermissions(MainActivity.this, MainActivity.this, havePermissions);
             if (!havePermissions) return;
 
-            if (permissions.locationEnabled(MainActivity.this)) return;
+            if (PermissionsManager.locationEnabled(MainActivity.this)) return;
 
             if (!this.foregroundServiceRunning()) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -236,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                 }
             }
 
-            bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
+            bindService(intent, ForegroundServiceManager.serviceConnection, Context.BIND_AUTO_CREATE);
 
             v.setVisibility(View.GONE);
             buttonContainer.setVisibility(View.VISIBLE);
@@ -248,14 +160,14 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
             startingTime = date.getTime();
 
-            File file1 = new File(rootDir + "/_temp/" + index);
+            File file1 = new File(rootDir + "/_temp/" + IndexManager.getIndex());
 
             if (!file1.exists()) {
                 file1.mkdirs();
             }
 
             try {
-                String tempDir = rootDir + "/_temp/" + index + "/";
+                String tempDir = rootDir + "/_temp/" + IndexManager.getIndex() + "/";
                 speeds = new FileOutputStream(tempDir + "speeds");
                 cords = new FileOutputStream(tempDir + "cords");
                 alt = new FileOutputStream(tempDir + "alt");
@@ -268,8 +180,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    if (isServiceBounded) {
-                        backgroundService.setEssentialData(MainActivity.this, speeds, cords, alt, index);
+                    if (ForegroundServiceManager.isIsServiceBounded()) {
+                        ForegroundServiceManager.getBackgroundService().setEssentialData(MainActivity.this, speeds, cords, alt);
                         timer.cancel();
                         timer.purge();
                     }
@@ -279,6 +191,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
         stopRecording.setOnClickListener(view -> {
             long endTime = new Date().getTime();
+            BackgroundService backgroundService = ForegroundServiceManager.getBackgroundService();
             startPoint = backgroundService.startPoint;
 
             backgroundService.stopListener();
@@ -323,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
             // If the pause is not end by the user because he shut down the record
             if (pauses.count % 2 != 0) {
-                long date = new DurationManager().getMSDuration(pauses.get(pauses.count - 1), endTime);
+                long date = DurationManager.getMSDuration(pauses.get(pauses.count - 1), endTime);
                 pauses.push(date);
             }
 
@@ -335,13 +248,13 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
             double lastLongitude = backgroundService.lastLongitude;
 
             try {
-                FileOutputStream endingData = new FileOutputStream(rootDir + "/_temp/" + index + "/infos");
+                FileOutputStream endingData = new FileOutputStream(rootDir + "/_temp/" + IndexManager.getIndex() + "/infos");
                 endingData.write(String.valueOf(startingTime).getBytes(StandardCharsets.UTF_8));
                 endingData.write(' ');
                 endingData.write(String.valueOf(endTime).getBytes(StandardCharsets.UTF_8));
                 endingData.write(' ');
 
-                int duration = (int) ((new DurationManager().getPathDuration(startingTime, endTime, pauses.toArray())) * 1e-3);
+                int duration = (int) ((DurationManager.getPathDuration(startingTime, endTime, pauses.toArray())) * 1e-3);
                 endingData.write(String.valueOf(duration).getBytes(StandardCharsets.UTF_8));
 
                 endingData.write(' ');
@@ -370,14 +283,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                 e.printStackTrace();
             }
 
-            index++;
-
-            try {
-                FileOutputStream outputStream = new FileOutputStream(rootDir + "/index");
-                outputStream.write((byte) index);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            IndexManager.incIndex();
+            IndexManager.save();
 
             // Reset values to default.
             timer = new Timer();
@@ -387,13 +294,14 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
             // Stopping background service
             stopService(intent);
-            unbindService(serviceConnection);
+            unbindService(ForegroundServiceManager.serviceConnection);
 
             setupLastTripData();
         });
 
         pauseRecording.setOnClickListener(view -> {
-            if (isServiceBounded) {
+            BackgroundService backgroundService = ForegroundServiceManager.getBackgroundService();
+            if (ForegroundServiceManager.isIsServiceBounded()) {
                 backgroundService.stopListener();
             }
 
@@ -408,6 +316,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
         });
 
         resumeRecording.setOnClickListener(view -> {
+            BackgroundService backgroundService = ForegroundServiceManager.getBackgroundService();
+
             if (!havePermissions) {
                 ActivityCompat.requestPermissions(
                         MainActivity.this,
@@ -418,43 +328,28 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                         1
                 );
 
-                havePermissions = permissions.verifyPermissions(MainActivity.this);
+                havePermissions = PermissionsManager.verifyPermissions(MainActivity.this);
 
                 if (!havePermissions) return;
             }
 
-            if (permissions.locationEnabled(MainActivity.this)) return;
+            if (PermissionsManager.locationEnabled(MainActivity.this)) return;
 
             backgroundService.startListener();
 
             view.setVisibility(View.GONE);
             pauseRecording.setVisibility(View.VISIBLE);
 
-            long date = new DurationManager()
-                    .getMSDuration(
-                            pauses.get(pauses.count - 1),
-                            new Date().getTime()
-                    );
+            long date = DurationManager.getMSDuration(
+                    pauses.get(pauses.count - 1),
+                    new Date().getTime()
+            );
 
             pauses.push(date);
 
             backgroundService.setPauses(pauses);
         });
     }
-
-    private final ServiceConnection serviceConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            BackgroundService.LocalBinder binder = (BackgroundService.LocalBinder) iBinder;
-            backgroundService = binder.getService();
-            isServiceBounded = true;
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            isServiceBounded = false;
-        }
-    };
 
     public boolean foregroundServiceRunning() {
         ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -466,9 +361,9 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
         return false;
     }
 
-    public void locationUpdated(Location location, double bearing, double slope, double altMetric, float actualSpeed, float distance) {
-        String duration = new DurationManager().getDurationFromStartingDate(startingTime);
-        String direction = new DirectionManager().getDirection(location.getBearing());
+    public void locationUpdated(@NonNull Location location, double bearing, double slope, double altMetric, float actualSpeed, float distance) {
+        String duration = DurationManager.getDurationFromStartingDate(startingTime);
+        String direction = DirectionManager.getDirection(location.getBearing());
 
         durationView.setText("Durée d'enregistrement :" + duration);
         directionView.setText("Direction : " + direction);
@@ -492,10 +387,11 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
     }
 
     public void setupLastTripData() {
-        if (this.index < 1) return;
+        int index = IndexManager.getIndex();
+        if (index < 1) return;
         lastTrips.clear();
 
-        for (int i = this.index - 1; i > this.index - 4; i--) {
+        for (int i = index - 1; i > index - 4; i--) {
             if (i < 0) break;
 
             File file = new File(rootDir + "/_temp/" + i + "/infos");
@@ -512,7 +408,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                     String startTripDate = formatter.format(date);
                     startTripDate = startTripDate.replace(":", "h");
 
-                    String duration = new DurationManager().getDuration(Integer.parseInt(args[2]));
+                    String duration = DurationManager.getDuration(Integer.parseInt(args[2]));
                     Float distance = Float.parseFloat(args[3]) / 1000;
 
                     TripData tripData = new TripData(startTripDate, String.format(Locale.FRANCE,
@@ -542,7 +438,9 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                         recyclerViewAdapter.notifyItemRemoved(position);
                         recyclerViewAdapter.notifyItemRangeChanged(position, recyclerViewAdapter.getItemCount());
 
+
                         // Deleting the item in directories
+                        int index = IndexManager.getIndex();
                         int positionInDirectory = index - position - 1;
                         File file = new File(rootDir + "/_temp/" + positionInDirectory + "/");
                         if (!file.exists()) return;
@@ -570,14 +468,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                                 dir.renameTo(new File(rootDir + "/_temp/" + (i - gap) + "/"));
                             }
 
-                            index -= gap;
-
-                            try {
-                                FileOutputStream outputStream = new FileOutputStream(rootDir + "/index");
-                                outputStream.write((byte) index);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            IndexManager.setIndex(index - gap);
+                            IndexManager.save();
 
                             new AlertDialog.Builder(MainActivity.this)
                                     .setTitle("Enregistrement supprimé avec succès !")
@@ -586,6 +478,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                                     )
                                     .setPositiveButton("OK", null)
                                     .show();
+
+                            MainActivity.this.setupLastTripData();
                         } catch (Error ignored) {
                         }
                     }
@@ -613,7 +507,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
 
     @Override
     public void onItemClick(int position) {
-        int elementIndex = index - position - 1;
+        int elementIndex = IndexManager.getIndex() - position - 1;
 
         Intent intent = new Intent(MainActivity.this, DetailsTripsActivity.class);
 
