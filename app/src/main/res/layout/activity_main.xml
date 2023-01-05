@@ -13,7 +13,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="26dp"
         android:fontFamily="@font/mina_bold"
-        android:text="Course Recorder"
+        android:text="@string/app_name"
         android:textSize="36sp"
         android:shadowColor="#26FFFFFF"
         android:shadowDx="0"
@@ -32,7 +32,7 @@
             android:id="@+id/duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Durée d'enregistrement : 0 minute"
+            android:text="@string/record_duration_text"
             android:layout_centerHorizontal="true"
             android:textColor="@color/white"/>
 
@@ -40,7 +40,7 @@
             android:id="@+id/distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Distance parcourue : 0m"
+            android:text="@string/distance_traveled_text"
             android:layout_below="@id/duration"
             android:layout_centerHorizontal="true"
             android:textColor="@color/white"/>
@@ -49,7 +49,7 @@
             android:id="@+id/speed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Vitesse : 0 km/h"
+            android:text="@string/speed_text"
             android:layout_below="@id/distance"
             android:layout_centerHorizontal="true"
             android:textColor="@color/white" />
@@ -58,7 +58,7 @@
             android:id="@+id/direction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Direction : N"
+            android:text="@string/direction_text"
             android:layout_below="@id/speed"
             android:layout_centerHorizontal="true"
             android:textColor="@color/white" />
@@ -67,7 +67,7 @@
             android:id="@+id/altitude"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Altitude : 0m"
+            android:text="@string/altitude_text"
             android:layout_below="@id/direction"
             android:layout_centerHorizontal="true"
             android:textColor="@color/white" />
@@ -76,7 +76,7 @@
             android:id="@+id/slop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pente : 0%"
+            android:text="@string/slope_text"
             android:layout_below="@id/altitude"
             android:layout_centerHorizontal="true"
             android:textColor="@color/white" />

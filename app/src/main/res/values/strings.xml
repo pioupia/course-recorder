@@ -1,4 +1,17 @@
 <resources>
     <string name="app_name">Course Recorder</string>
-    <string name="trippreview">TripPreview</string>
+    <string name="trippreview" translatable="false">TripPreview</string>
+
+    <string name="record_duration">Recording time:</string>
+    <string name="record_duration_text">Recording time: 0 minute</string>
+    <string name="distance_traveled">Distance travelled:</string>
+    <string name="distance_traveled_text">Distance travelled: 0m</string>
+    <string name="speed">Speed:</string>
+    <string name="speed_text">Speed: 0 km/h</string>
+    <string name="direction" translatable="false">Direction</string>
+    <string name="direction_text">Direction: N</string>
+    <string name="altitude" translatable="false">Altitude</string>
+    <string name="altitude_text">Altitude: 0m</string>
+    <string name="slope">Slope:</string>
+    <string name="slope_text">Slope: 0%</string>
 </resources>
