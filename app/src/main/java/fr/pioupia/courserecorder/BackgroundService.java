@@ -67,7 +67,20 @@ public class BackgroundService extends Service {
     @SuppressLint("MissingPermission")
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        createNotification("Votre trajet est en cours d'enregistrement.\nDurée : 0min | distance : 0m");
+        createNotification(
+                String.format(Locale.ENGLISH,
+                        "%s\n%s %s\n%s %s\n%s %.2fkm/h\n%s %.2fkm/h",
+                        getString(R.string.trip_recording),
+                        getString(R.string.duration),
+                        "0min",
+                        getString(R.string.distance),
+                        "0m",
+                        getString(R.string.speed_average),
+                        0.0,
+                        getString(R.string.max_speed),
+                        0.0
+                )
+        );
 
         mLocationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
@@ -217,11 +230,16 @@ public class BackgroundService extends Service {
 
             if (speedCount % 2 == 0) {
                 createNotification(
-                        String.format(Locale.FRANCE,
-                                "Votre trajet est en cours d'enregistrement.\nDurée : %s\nDistance : %.2fkm\nVitesse moyenne : %.2fkm/h\nVitesse max : %.2fkm/h",
+                        String.format(Locale.ENGLISH,
+                                "%s\n%s %s\n%s %.2fkm\n%s %.2fkm/h\n%s %.2fkm/h",
+                                getString(R.string.trip_recording),
+                                getString(R.string.duration),
                                 DurationManager.getDurationFromStartingDate(startingTime),
+                                getString(R.string.distance),
                                 distance / 1000,
+                                getString(R.string.speed_average),
                                 ((float) speed / speedCount) * 36 / 10,
+                                getString(R.string.max_speed),
                                 maxSpeed * 36 / 10
                         )
                 );
