@@ -5,10 +5,15 @@
     <string name="record_duration_text">Durée d\'enregistrement : 0 minute</string>
     <string name="distance_traveled">Distance parcourue :</string>
     <string name="distance_traveled_text">Distance parcourue : 0m</string>
-    <string name="speed">Vitesse:</string>
+    <string name="speed">Vitesse :</string>
     <string name="speed_text">Vitesse : 0 km/h</string>
     <string name="direction_text">Direction : N</string>
     <string name="altitude_text">Altitude : 0m</string>
     <string name="slope">Pente :</string>
     <string name="slope_text">Pente : 0%</string>
+    <string name="delete_record_success">Enregistrement supprimé avec succès !</string>
+    <string name="trip_number">Le trajet n°</string>
+    <string name="successfully_deleted">a été supprimé avec succès !</string>
+    <string name="altitude">Altitude :</string>
+    <string name="direction">Direction :</string>
 </resources>
