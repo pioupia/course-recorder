@@ -1,4 +1,44 @@
 <resources>
     <string name="app_name">Course Recorder</string>
-    <string name="trippreview">TripPreview</string>
+    <string name="trippreview" translatable="false">TripPreview</string>
+
+    <string name="record_duration">Recording time:</string>
+    <string name="record_duration_text">Recording time: 0 minute</string>
+    <string name="distance_traveled">Distance travelled:</string>
+    <string name="distance_traveled_text">Distance travelled: 0m</string>
+    <string name="speed">Speed:</string>
+    <string name="speed_text">Speed: 0 km/h</string>
+    <string name="direction">Direction:</string>
+    <string name="direction_text">Direction: N</string>
+    <string name="altitude">Altitude:</string>
+    <string name="altitude_text">Altitude: 0m</string>
+    <string name="slope">Slope:</string>
+    <string name="slope_text">Slope: 0%</string>
+    <string name="delete_record_success">Record deleted successfully!</string>
+    <string name="trip_number">Trip #</string>
+    <string name="successfully_deleted">has been successfully deleted!</string>
+    <string name="trip_recording">Your trip is being recorded.</string>
+    <string name="duration">Duration:</string>
+    <string name="distance">Distance:</string>
+    <string name="speed_average">Average speed:</string>
+    <string name="max_speed">Max speed:</string>
+    <string name="internet_required">Internet connection required</string>
+    <string name="internet_required_text">The internet connection is not enabled, some data cannot load.</string>
+    <string name="cancel">Cancel</string>
+    <string name="trip_number_contracted">Trip #</string>
+    <string name="starting">Start:</string>
+    <string name="arrival">Arrival:</string>
+    <string name="break_text">Break:</string>
+    <string name="beginning_text">Beginning:</string>
+    <string name="ending_text">End:</string>
+    <string name="trip_default">Trip #1</string>
+    <string name="starting_default">Start: Unknown position</string>
+    <string name="end_default">Arrival: Unknown position</string>
+    <string name="beginning_default">• Beginning: 21 august 2022 à 14h21</string>
+    <string name="ending_default">• End: 22 august 2022 à 14h20</string>
+    <string name="default_duration">• Duration: 24h 59min 59s</string>
+    <string name="default_distance">• Distance: 9999 Km</string>
+    <string name="default_speed">• Average speed: 99 km/h</string>
+    <string name="default_max_speed">• Max speed: 99 km/h</string>
+    <string name="default_break">• Break: 59 min</string>
 </resources>

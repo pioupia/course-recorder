@@ -1,5 +1,6 @@
 package fr.pioupia.courserecorder.Activites;
 
+import android.app.appsearch.GetSchemaResponse;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -50,10 +51,10 @@ public class DetailsTripsActivity extends AppCompatActivity {
 
         if (!hasInternetAvailable) {
             new AlertDialog.Builder(this)
-                    .setTitle("Internet connection required")
-                    .setMessage("The internet connection is not enabled, so your data can't load")
+                    .setTitle(getString(R.string.internet_required))
+                    .setMessage(getString(R.string.internet_required_text))
                     .setPositiveButton("Ok", null)
-                    .setNegativeButton("Cancel", (paramDialogInterface, paramInt) -> this.startActivity(new Intent(this, MainActivity.class)))
+                    .setNegativeButton(getString(R.string.cancel), (paramDialogInterface, paramInt) -> this.startActivity(new Intent(this, MainActivity.class)))
                     .show();
         }
 
@@ -71,8 +72,9 @@ public class DetailsTripsActivity extends AppCompatActivity {
 
         tripTitle.setText(
                 String.format(
-                        Locale.FRANCE,
-                        "Trajet n°%d",
+                        Locale.ENGLISH,
+                        "%s%d",
+                        getString(R.string.trip_number_contracted),
                         id + 1
                 )
         );
@@ -116,8 +118,9 @@ public class DetailsTripsActivity extends AppCompatActivity {
                     if (locationStart.size() > 0) {
                         startingPointText.setText(
                                 String.format(
-                                        Locale.FRANCE,
-                                        "Départ : %s.",
+                                        Locale.ENGLISH,
+                                        "%s %s.",
+                                        getString(R.string.starting),
                                         locationStart.get(0).getAddressLine(0)
                                 )
                         );
@@ -126,8 +129,9 @@ public class DetailsTripsActivity extends AppCompatActivity {
                     if (locationEnd.size() > 0) {
                         endingPointText.setText(
                                 String.format(
-                                        Locale.FRANCE,
-                                        "Arrivée : %s.",
+                                        Locale.ENGLISH,
+                                        "%s %s.",
+                                        getString(R.string.arrival),
                                         locationEnd.get(0).getAddressLine(0)
                                 )
                         );
@@ -135,23 +139,41 @@ public class DetailsTripsActivity extends AppCompatActivity {
                 }
 
                 startingDate.setText(
-                        "• Début : " + startTripDate
+                        String.format(
+                                Locale.ENGLISH,
+                                "• %s " + startTripDate,
+                                getString(R.string.beginning_text)
+                        )
                 );
                 endingDate.setText(
-                        "• Fin : " + endTripDate
+                        String.format(
+                                Locale.ENGLISH,
+                        "• %s " + endTripDate,
+                                getString(R.string.ending_text)
+                        )
                 );
 
                 durationText.setText(
-                        "• Durée : " + duration
+                        String.format(
+                                Locale.ENGLISH,
+                                "• %s " + duration,
+                                getString(R.string.duration)
+                        )
                 );
                 distanceText.setText(
-                        String.format(Locale.FRANCE, "• Distance : %.2f Km", distance)
+                        String.format(Locale.ENGLISH, "• %s %.2f Km",
+                                getString(R.string.distance),
+                                distance)
                 );
                 speedAverageText.setText(
-                        String.format(Locale.FRANCE, "• Vitesse moyenne : %.1f km/h", average)
+                        String.format(Locale.ENGLISH, "• %s %.1f km/h",
+                                getString(R.string.speed_average),
+                                average)
                 );
                 maxSpeedText.setText(
-                        String.format(Locale.FRANCE, "• Vitesse max : %.1f km/h", maxSpeed)
+                        String.format(Locale.ENGLISH, "• %s %.1f km/h",
+                                getString(R.string.max_speed),
+                                maxSpeed)
                 );
 
                 if (myReader.hasNextLine()) {
@@ -173,7 +195,8 @@ public class DetailsTripsActivity extends AppCompatActivity {
                     pauseDurationText.setText(
                             String.format(
                                     Locale.FRANCE,
-                                    "• Pause : %s",
+                                    "• %s %s",
+                                    getString(R.string.break_text),
                                     pauseDurationString
                             )
                     );
