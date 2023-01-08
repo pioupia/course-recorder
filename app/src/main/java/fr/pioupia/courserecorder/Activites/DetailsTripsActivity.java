@@ -71,14 +71,8 @@ public class DetailsTripsActivity extends AppCompatActivity {
         TextView pauseDurationText = findViewById(R.id.pauseText);
 
         tripTitle.setText(
-                String.format(
-                        Locale.ENGLISH,
-                        "%s%d",
-                        getString(R.string.trip_number_contracted),
-                        id + 1
-                )
+                getString(R.string.trip_number_contracted, id + 1)
         );
-
 
         try {
             Scanner myReader = new Scanner(file);
@@ -117,63 +111,36 @@ public class DetailsTripsActivity extends AppCompatActivity {
 
                     if (locationStart.size() > 0) {
                         startingPointText.setText(
-                                String.format(
-                                        Locale.ENGLISH,
-                                        "%s %s.",
-                                        getString(R.string.starting),
-                                        locationStart.get(0).getAddressLine(0)
-                                )
+                                getString(R.string.starting, locationStart.get(0).getAddressLine(0))
                         );
                     }
 
                     if (locationEnd.size() > 0) {
                         endingPointText.setText(
-                                String.format(
-                                        Locale.ENGLISH,
-                                        "%s %s.",
-                                        getString(R.string.arrival),
-                                        locationEnd.get(0).getAddressLine(0)
-                                )
+                                getString(R.string.end, locationEnd.get(0).getAddressLine(0))
                         );
                     }
                 }
 
                 startingDate.setText(
-                        String.format(
-                                Locale.ENGLISH,
-                                "• %s " + startTripDate,
-                                getString(R.string.beginning_text)
-                        )
+                        getString(R.string.beginning_default, startTripDate)
                 );
                 endingDate.setText(
-                        String.format(
-                                Locale.ENGLISH,
-                        "• %s " + endTripDate,
-                                getString(R.string.ending_text)
-                        )
+                        getString(R.string.ending_default, endTripDate)
                 );
 
                 durationText.setText(
-                        String.format(
-                                Locale.ENGLISH,
-                                "• %s " + duration,
-                                getString(R.string.duration)
-                        )
+                        getString(R.string.default_duration, duration)
                 );
+                
                 distanceText.setText(
-                        String.format(Locale.ENGLISH, "• %s %.2f Km",
-                                getString(R.string.distance),
-                                distance)
+                        getString(R.string.default_distance, distance)
                 );
                 speedAverageText.setText(
-                        String.format(Locale.ENGLISH, "• %s %.1f km/h",
-                                getString(R.string.speed_average),
-                                average)
+                        getString(R.string.default_speed, average)
                 );
                 maxSpeedText.setText(
-                        String.format(Locale.ENGLISH, "• %s %.1f km/h",
-                                getString(R.string.max_speed),
-                                maxSpeed)
+                        getString(R.string.default_max_speed, maxSpeed)
                 );
 
                 if (myReader.hasNextLine()) {
@@ -193,12 +160,7 @@ public class DetailsTripsActivity extends AppCompatActivity {
                     }
 
                     pauseDurationText.setText(
-                            String.format(
-                                    Locale.FRANCE,
-                                    "• %s %s",
-                                    getString(R.string.break_text),
-                                    pauseDurationString
-                            )
+                            getString(R.string.default_break, pauseDurationString)
                     );
                 }
             }

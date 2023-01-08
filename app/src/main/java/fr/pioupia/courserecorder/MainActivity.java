@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
         speedView = findViewById(R.id.speed);
         directionView = findViewById(R.id.direction);
         altitudeView = findViewById(R.id.altitude);
-        penteView = findViewById(R.id.slop);
+        penteView = findViewById(R.id.slope);
 
         if (this.foregroundServiceRunning()) {
             ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
@@ -373,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                 getString(R.string.direction, direction)
         );
         penteView.setText(
-                getString(R.string.slope, Math.round(slope))
+                getString(R.string.slope, Math.round(slope) + "%")
         );
         altitudeView.setText(
                 getString(R.string.altitude, altMetric)
