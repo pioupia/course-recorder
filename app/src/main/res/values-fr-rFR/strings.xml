@@ -1,21 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Course Recorder</string>
-    <string name="record_duration">Durée d\'enregistrement :</string>
-    <string name="record_duration_text">Durée d\'enregistrement : 0 minute</string>
-    <string name="distance_traveled">Distance parcourue :</string>
-    <string name="distance_traveled_text">Distance parcourue : 0m</string>
-    <string name="speed">Vitesse :</string>
-    <string name="speed_text">Vitesse : 0 km/h</string>
-    <string name="direction_text">Direction : N</string>
-    <string name="altitude_text">Altitude : 0m</string>
-    <string name="slope">Pente :</string>
-    <string name="slope_text">Pente : 0%</string>
+    <string name="record_duration">Durée d\'enregistrement : <xliff:g id="time" example="0 minute">%1$s</xliff:g></string>
+    <string name="distance_traveled">Distance parcourue : <xliff:g id="distance" example="0m">%1$s</xliff:g></string>
+    <string name="speed">Vitesse : <xliff:g id="speed" example="0">%.2f</xliff:g> km/h</string>
+    <string name="direction">Direction : <xliff:g id="direction" example="N">%1$s</xliff:g></string>
+    <string name="altitude">Altitude : <xliff:g id="altitude" example="0">%.2f</xliff:g>m</string>
+    <string name="slope">Pente : <xliff:g id="slope" example="0%">%1$s</xliff:g></string>
     <string name="delete_record_success">Enregistrement supprimé avec succès !</string>
-    <string name="trip_number">Le trajet n°</string>
+    <string name="trip_number">Le trajet n°<xliff:g id="trip_number" example="1">%d</xliff:g></string>
     <string name="successfully_deleted">a été supprimé avec succès !</string>
-    <string name="altitude">Altitude :</string>
-    <string name="direction">Direction :</string>
     <string name="trip_recording">Votre trajet est en cours d\'enregistrement.</string>
     <string name="duration">Durée :</string>
     <string name="distance">Distance :</string>
@@ -24,20 +18,17 @@
     <string name="internet_required">Connexion internet requise</string>
     <string name="internet_required_text">La connexion internet n\'est pas activée, certaines données ne peuvent pas charger.</string>
     <string name="cancel">Annuler</string>
-    <string name="trip_number_contracted">Trajet n°</string>
-    <string name="starting">Départ :</string>
-    <string name="arrival">Arrivée :</string>
+    <string name="trip_number_contracted">Trajet n°<xliff:g id="trip_number" example="1">%d</xliff:g></string>
     <string name="break_text">Pause :</string>
     <string name="beginning_text">Début :</string>
     <string name="ending_text">Fin :</string>
-    <string name="trip_default">Trajet n°1</string>
-    <string name="starting_default">Départ : Position inconnue</string>
-    <string name="end_default">Arrivée : Position inconnue</string>
-    <string name="beginning_default">• Début : 21 août 2022 à 14h21</string>
-    <string name="ending_default">• Fin : 22 août 2022 à 14h20</string>
-    <string name="default_duration">• Durée : 24h 59min 59s</string>
-    <string name="default_distance">• Distance : 9999 Km</string>
-    <string name="default_speed">• Vitesse moyenne : 99 km/h</string>
-    <string name="default_max_speed">• Vitesse max : 99 km/h</string>
-    <string name="default_break">• Pause : 59 min</string>
+    <string name="starting">Départ : <xliff:g id="unknown_position" example="Position inconnue">%1$s</xliff:g>.</string>
+    <string name="end">Arrivée : <xliff:g id="unknown_position" example="Position inconnue">%1$s</xliff:g>.</string>
+    <string name="beginning_default">• Début : <xliff:g id="unknown_start_date" example="21 août 2022 à 14h21">%1$s</xliff:g></string>
+    <string name="ending_default">• Fin : <xliff:g id="unknown_end_date" example="22 août 2022 à 14h20">%1$s</xliff:g></string>
+    <string name="default_duration">• Durée : <xliff:g id="duration_short" example="24h 59min 59s">%1$s</xliff:g></string>
+    <string name="default_distance">• Distance : <xliff:g id="distance_short" example="0">%.2f</xliff:g> Km</string>
+    <string name="default_speed">• Vitesse moyenne : <xliff:g id="average_speed_short" example="99">%.2f</xliff:g> km/h</string>
+    <string name="default_max_speed">• Vitesse max : <xliff:g id="max_speed_short" example="99">%.2f</xliff:g> km/h</string>
+    <string name="default_break">• Pause : <xliff:g id="break_duration" example="59 min">%1$s</xliff:g></string>
 </resources>
