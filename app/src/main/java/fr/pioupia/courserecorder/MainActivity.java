@@ -365,47 +365,31 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
         String duration = DurationManager.getDurationFromStartingDate(startingTime);
         String direction = DirectionManager.getDirection(location.getBearing());
 
+
         durationView.setText(
-                String.format(
-                        "%s %s",
-                        getString(R.string.record_duration),
-                        duration
-                )
+                getString(R.string.record_duration, duration)
         );
         directionView.setText(
-                String.format(
-                        "%s %s",
-                        getString(R.string.direction),
-                        direction
-                )
+                getString(R.string.direction, direction)
         );
         penteView.setText(
-                String.format(
-                        "%s %s",
-                        getString(R.string.slope),
-                        Math.round(slope) + "%"
-                )
+                getString(R.string.slope, Math.round(slope))
         );
         altitudeView.setText(
-                String.format(
-                        "%s %s",
-                        getString(R.string.altitude),
-                        ((int) altMetric) + "m"
-                )
+                getString(R.string.altitude, altMetric)
         );
-
         speedView.setText(
-                String.format(Locale.FRANCE, "%s %d km/h", getString(R.string.speed), (int) (actualSpeed * 3600 / 1000))
+                getString(R.string.speed, actualSpeed * 3600 / 1000)
         );
 
         if (distance > 1000) {
             double d = (double) distance / 1000;
             distanceView.setText(
-                    String.format(Locale.FRANCE, "%s %.2f km", getString(R.string.distance_traveled), d)
+                    getString(R.string.distance_traveled, d + " Km")
             );
         } else {
             distanceView.setText(
-                    String.format(Locale.FRANCE, "%s %d m", getString(R.string.distance_traveled), (int) distance)
+                    getString(R.string.distance_traveled, ((int) distance) + " m")
             );
         }
     }
@@ -435,7 +419,7 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                     String duration = DurationManager.getDuration(Integer.parseInt(args[2]));
                     Float distance = Float.parseFloat(args[3]) / 1000;
 
-                    TripData tripData = new TripData(startTripDate, String.format(Locale.FRANCE,
+                    TripData tripData = new TripData(startTripDate, String.format(Locale.ENGLISH,
                             "%.2f Km - %s",
                             distance,
                             duration
@@ -499,9 +483,8 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
                                     .setTitle(getString(R.string.delete_record_success))
                                     .setMessage(
                                             String.format(
-                                                    "%s%s %s",
-                                                    getString(R.string.trip_number),
-                                                    positionInDirectory + 1,
+                                                    "%s %s",
+                                                    getString(R.string.trip_number, positionInDirectory + 1),
                                                     getString(R.string.successfully_deleted)
                                             )
                                     )
