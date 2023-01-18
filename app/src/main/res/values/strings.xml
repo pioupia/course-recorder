@@ -2,6 +2,13 @@
     <string name="app_name">Course Recorder</string>
     <string name="trippreview" translatable="false">TripPreview</string>
 
+    <string name="record_duration_default">Recording time: 0 minute</string>
+    <string name="distance_traveled_default">Distance travelled: 0m</string>
+    <string name="speed_default">Speed: 0 km/h</string>
+    <string name="direction_default">Direction: N</string>
+    <string name="altitude_default">Altitude: 0m</string>
+    <string name="slope_default">Slope: 0%</string>
+
     <string name="record_duration">Recording time: <xliff:g id="time" example="0 minute">%1$s</xliff:g></string>
     <string name="distance_traveled">Distance travelled: <xliff:g id="distance" example="0m">%1$s</xliff:g></string>
     <string name="speed">Speed: <xliff:g id="speed" example="0">%.2f</xliff:g> km/h</string>

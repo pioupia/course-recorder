@@ -32,7 +32,7 @@
             android:id="@+id/duration"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/record_duration"
+            android:text="@string/record_duration_default"
             android:layout_centerHorizontal="true"
             android:textColor="@color/white"/>
 
@@ -40,7 +40,7 @@
             android:id="@+id/distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/distance_traveled"
+            android:text="@string/distance_traveled_default"
             android:layout_below="@id/duration"
             android:layout_centerHorizontal="true"
             android:textColor="@color/white"/>
@@ -49,7 +49,7 @@
             android:id="@+id/speed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/speed"
+            android:text="@string/speed_default"
             android:layout_below="@id/distance"
             android:layout_centerHorizontal="true"
             android:textColor="@color/white" />
@@ -58,7 +58,7 @@
             android:id="@+id/direction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/direction"
+            android:text="@string/direction_default"
             android:layout_below="@id/speed"
             android:layout_centerHorizontal="true"
             android:textColor="@color/white" />
@@ -67,7 +67,7 @@
             android:id="@+id/altitude"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/altitude"
+            android:text="@string/altitude_default"
             android:layout_below="@id/direction"
             android:layout_centerHorizontal="true"
             android:textColor="@color/white" />
@@ -76,7 +76,7 @@
             android:id="@+id/slope"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/slope"
+            android:text="@string/slope_default"
             android:layout_below="@id/altitude"
             android:layout_centerHorizontal="true"
             android:textColor="@color/white" />

@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <string name="app_name">Course Recorder</string>
+
+    <string name="record_duration_default">Durée d\'enregistrement : 0 minute</string>
+    <string name="distance_traveled_default">Distance parcourue : 0m</string>
+    <string name="speed_default">Vitesse : 0 km/h</string>
+    <string name="direction_default">Direction : N</string>
+    <string name="altitude_default">Altitude : 0m</string>
+    <string name="slope_default">Pente : 0%</string>
+
     <string name="record_duration">Durée d\'enregistrement : <xliff:g id="time" example="0 minute">%1$s</xliff:g></string>
     <string name="distance_traveled">Distance parcourue : <xliff:g id="distance" example="0m">%1$s</xliff:g></string>
     <string name="speed">Vitesse : <xliff:g id="speed" example="0">%.2f</xliff:g> km/h</string>
     <string name="direction">Direction : <xliff:g id="direction" example="N">%1$s</xliff:g></string>
     <string name="altitude">Altitude : <xliff:g id="altitude" example="0">%.2f</xliff:g>m</string>
     <string name="slope">Pente : <xliff:g id="slope" example="0%">%1$s</xliff:g></string>
+
     <string name="delete_record_success">Enregistrement supprimé avec succès !</string>
     <string name="trip_number">Le trajet n°<xliff:g id="trip_number" example="1">%d</xliff:g></string>
     <string name="successfully_deleted">a été supprimé avec succès !</string>
