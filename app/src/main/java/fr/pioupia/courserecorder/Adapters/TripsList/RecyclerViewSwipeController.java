@@ -168,8 +168,8 @@ public class RecyclerViewSwipeController extends Callback {
                 ResourcesCompat.getFont(this.context, R.font.mina)
         );
 
-        float textWidth = p.measureText("Supprimer");
-        c.drawText("Supprimer", button.centerX() - (textWidth / 2), button.centerY() + (textSize / 2), p);
+        float textWidth = p.measureText(this.context.getString(R.string.delete_trip));
+        c.drawText(this.context.getString(R.string.delete_trip), button.centerX() - (textWidth / 2), button.centerY() + (textSize / 2), p);
     }
 
     public void onDraw(Canvas c) {

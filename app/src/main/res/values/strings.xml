@@ -25,6 +25,8 @@
     <string name="ending_text">End:</string>
     <string name="starting">Start: <xliff:g id="unknown_position" example="Unknown position">%1$s</xliff:g>.</string>
     <string name="end">Arrival: <xliff:g id="unknown_position" example="Unknown position">%1$s</xliff:g>.</string>
+    <string name="starting_default">Start: Unknown position.</string>
+    <string name="end_default">Arrival: Unknown position.</string>
     <string name="beginning_default">• Beginning: <xliff:g id="unknown_start_date" example="21 august 2022 at 14h21">%1$s</xliff:g></string>
     <string name="ending_default">• End: <xliff:g id="unknown_end_date" example="22 august 2022 at 14h20">%1$s</xliff:g></string>
     <string name="default_duration">• Duration: <xliff:g id="duration_short" example="24h 59min 59s">%1$s</xliff:g></string>
@@ -32,4 +34,5 @@
     <string name="default_speed">• Average speed: <xliff:g id="average_speed_short" example="99">%.2f</xliff:g> km/h</string>
     <string name="default_max_speed">• Max speed: <xliff:g id="max_speed_short" example="99">%.2f</xliff:g> km/h</string>
     <string name="default_break">• Break: <xliff:g id="break_duration" example="59 min">%1$s</xliff:g></string>
+    <string name="delete_trip">Delete</string>
 </resources>

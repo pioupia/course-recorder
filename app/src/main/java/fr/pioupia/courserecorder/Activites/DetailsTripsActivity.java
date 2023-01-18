@@ -1,6 +1,5 @@
 package fr.pioupia.courserecorder.Activites;
 
-import android.app.appsearch.GetSchemaResponse;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -105,20 +104,24 @@ public class DetailsTripsActivity extends AppCompatActivity {
                 double endLat = Double.parseDouble(args[9]);
 
                 if (hasInternetAvailable) {
-                    Geocoder geocoder = new Geocoder(this, Locale.getDefault());
-                    List<Address> locationStart = geocoder.getFromLocation(startLat, startLong, 1);
-                    List<Address> locationEnd = geocoder.getFromLocation(endLat, endLong, 1);
+                    try {
+                        Geocoder geocoder = new Geocoder(DetailsTripsActivity.this, Locale.getDefault());
+                        List<Address> locationStart = geocoder.getFromLocation(startLat, startLong, 1);
+                        List<Address> locationEnd = geocoder.getFromLocation(endLat, endLong, 1);
 
-                    if (locationStart.size() > 0) {
-                        startingPointText.setText(
-                                getString(R.string.starting, locationStart.get(0).getAddressLine(0))
-                        );
-                    }
+                        if (locationStart.size() > 0) {
+                            startingPointText.setText(
+                                    getString(R.string.starting, locationStart.get(0).getAddressLine(0))
+                            );
+                        }
 
-                    if (locationEnd.size() > 0) {
-                        endingPointText.setText(
-                                getString(R.string.end, locationEnd.get(0).getAddressLine(0))
-                        );
+                        if (locationEnd.size() > 0) {
+                            endingPointText.setText(
+                                    getString(R.string.end, locationEnd.get(0).getAddressLine(0))
+                            );
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
                 }
 
@@ -132,7 +135,7 @@ public class DetailsTripsActivity extends AppCompatActivity {
                 durationText.setText(
                         getString(R.string.default_duration, duration)
                 );
-                
+
                 distanceText.setText(
                         getString(R.string.default_distance, distance)
                 );
