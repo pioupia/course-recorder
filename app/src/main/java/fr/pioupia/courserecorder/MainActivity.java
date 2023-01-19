@@ -383,9 +383,9 @@ public class MainActivity extends AppCompatActivity implements BackgroundService
         );
 
         if (distance > 1000) {
-            double d = (double) distance / 1000;
+            float d = distance / 1000;
             distanceView.setText(
-                    getString(R.string.distance_traveled, d + " Km")
+                    getString(R.string.distance_traveled, String.format(Locale.getDefault(), "%.2f Km", d))
             );
         } else {
             distanceView.setText(
