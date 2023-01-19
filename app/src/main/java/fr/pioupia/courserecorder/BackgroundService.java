@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
@@ -106,12 +107,20 @@ public class BackgroundService extends Service {
 
             getSystemService(NotificationManager.class).createNotificationChannel(channel);
 
+            Intent myIntent = new Intent(getApplicationContext(), MainActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(
+                    getApplicationContext(),
+                    1,
+                    myIntent,
+                    PendingIntent.FLAG_UPDATE_CURRENT);
+
             Notification notification = new Notification.Builder(this, channelId)
                     .setContentText(contentText)
                     .setContentTitle("Course Recorder")
                     .setSmallIcon(R.drawable.ic_launcher_background)
                     .setStyle(new Notification.BigTextStyle()
                             .bigText(contentText))
+                    .setContentIntent(pendingIntent)
                     .build();
 
             startForeground(1001, notification);
