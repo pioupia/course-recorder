@@ -91,6 +91,8 @@ public class ForegroundServiceManager {
 
                             timer.cancel();
                             timer.purge();
+
+                            timer = new Timer();
                         }
                     }
                 }, 300, 100);
