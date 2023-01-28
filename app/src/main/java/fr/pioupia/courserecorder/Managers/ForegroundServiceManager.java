@@ -53,6 +53,11 @@ public class ForegroundServiceManager {
                             mainActivity.pauses = backgroundService.pauses;
                             IndexManager.setIndex(backgroundService.index);
 
+                            // restore file streams
+                            mainActivity.speeds = backgroundService.speeds;
+                            mainActivity.alt = backgroundService.alt;
+                            mainActivity.cords = backgroundService.cords;
+
                             mainActivity.runOnUiThread(() -> {
                                 statsContainer.setVisibility(View.VISIBLE);
                                 tripsContainer.setVisibility(View.GONE);
