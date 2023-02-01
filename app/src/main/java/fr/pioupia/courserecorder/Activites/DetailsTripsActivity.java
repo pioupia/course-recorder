@@ -38,9 +38,9 @@ public class DetailsTripsActivity extends AppCompatActivity {
 
         int id = getIntent().getIntExtra("ID", 0);
 
-        String rootDir = getApplicationInfo().dataDir + "/records/_temp/";
+        String rootDir = getApplicationInfo().dataDir + "/records/_temp/" + id + "/";
 
-        File file = new File(rootDir + id + "/infos");
+        File file = new File(rootDir + "infos");
 
         if (!file.exists()) {
             System.out.println("File does not exist.");
