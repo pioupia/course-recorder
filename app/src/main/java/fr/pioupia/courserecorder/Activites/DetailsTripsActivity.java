@@ -5,12 +5,15 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -45,6 +48,11 @@ public class DetailsTripsActivity extends AppCompatActivity {
             startActivity(intent);
             return;
         }
+
+        copy(rootDir, "infos");
+        copy(rootDir, "speeds");
+        copy(rootDir, "cords");
+        copy(rootDir, "alt");
 
         boolean hasInternetAvailable = isInternetAvailable();
 
@@ -197,6 +205,43 @@ public class DetailsTripsActivity extends AppCompatActivity {
             return task.execute(name).get();
         } catch (InterruptedException | ExecutionException e) {
             return null;
+        }
+    }
+
+    public static void copy(String path, String fileName) {
+        try {
+            FileReader fr = new FileReader(path + fileName);
+
+            String envPath = Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS) + "/";
+            System.out.println(envPath);
+
+            new File(envPath + fileName + ".txt").createNewFile();
+
+            FileWriter fw = new FileWriter(envPath + fileName + ".txt");
+            String str = "";
+
+            int i;
+
+            while ((i = fr.read()) != -1) {
+                str += (char) i;
+            }
+
+            System.out.println(str);
+
+            fw.write(str);
+
+            fr.close();
+            fw.close();
+
+            System.out.println(
+                    "File reading and writing both done");
+        }
+
+        catch (IOException e) {
+            e.printStackTrace();
+            System.out.println(
+                    "There are some IOException");
         }
     }
 }
